@@ -1,0 +1,7 @@
+{
+  "task_id": "task-saas-educacional-2",
+  "task_description": "Relocate the fully-built SaaS educational management system from /projects/sandbox/sistemamodelo/app/ to /projects/sandbox/sistemamodelo/saas-educacional/ as required by the user specification, then verify everything builds and passes tests at the new location.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001"],
+  "blocked_reason": null
+}

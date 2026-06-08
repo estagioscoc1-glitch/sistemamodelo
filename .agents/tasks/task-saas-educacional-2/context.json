@@ -1,0 +1,19 @@
+{
+  "project_type": "Full-stack SaaS Educational Management System (Node.js/Express + React/Next.js + PostgreSQL/Prisma)",
+  "language": "TypeScript",
+  "build_system": "npm with tsc for backend, Next.js build for frontend",
+  "test_framework": "Jest with ts-jest",
+  "build_command": "cd /projects/sandbox/sistemamodelo/saas-educacional && npm run build",
+  "test_command": "cd /projects/sandbox/sistemamodelo/saas-educacional && npm test",
+  "verification_instructions": "1. Run npm run build in /projects/sandbox/sistemamodelo/saas-educacional\n2. Run npm test to verify all tests pass\n3. Verify Prisma schema validates with npx prisma validate",
+  "snapshot_or_generated_files": "Prisma client generated files (node_modules/.prisma/client). Regenerate with: npx prisma generate",
+  "setup_instructions": "1. cd /projects/sandbox/sistemamodelo/saas-educacional\n2. npm install\n3. npx prisma generate\n4. npm run build",
+  "environment_constraints": "OPEN_INTERNET mode - full network access. Node.js v22 available. PostgreSQL is NOT pre-installed but Prisma schema can be generated and validated.",
+  "contribution_requirements": "Project must be at /projects/sandbox/sistemamodelo/saas-educacional/ as specified by the user.",
+  "key_patterns": "Monorepo-like structure with both backend and frontend in the same directory. Express.js REST API backend at src/backend/. Next.js React frontend at src/frontend/. Prisma ORM at prisma/. JWT auth with refresh tokens. Multi-tenant architecture.",
+  "relevant_files": [
+    "/projects/sandbox/sistemamodelo/app/ (existing implementation to be relocated)",
+    "/projects/sandbox/sistemamodelo/saas-educacional/ (target location)"
+  ],
+  "directory_structure": "/projects/sandbox/sistemamodelo/saas-educacional/ - Target SaaS application root\n  /prisma/ - Prisma schema and migrations\n  /src/backend/ - Express.js API (server, routes, controllers, services, middleware)\n  /src/frontend/ - Next.js React app (App Router, Tailwind, components)"
+}

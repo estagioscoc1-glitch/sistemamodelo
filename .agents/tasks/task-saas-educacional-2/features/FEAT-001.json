@@ -1,0 +1,27 @@
+{
+  "id": "FEAT-001",
+  "type": "chore",
+  "description": "Relocate the existing complete project from /projects/sandbox/sistemamodelo/app/ to /projects/sandbox/sistemamodelo/saas-educacional/ as required by the user specification. Copy all files, update any hardcoded paths if necessary, install dependencies at new location, and verify everything builds and tests pass.",
+  "status": "in_progress",
+  "steps": [
+    "Copy the entire /projects/sandbox/sistemamodelo/app/ directory to /projects/sandbox/sistemamodelo/saas-educacional/ (excluding node_modules, .next, and dist directories to do a clean install)",
+    "Run npm install in /projects/sandbox/sistemamodelo/saas-educacional/ to install backend dependencies",
+    "Run npm install in /projects/sandbox/sistemamodelo/saas-educacional/src/frontend/ to install frontend dependencies",
+    "Run npx prisma generate in /projects/sandbox/sistemamodelo/saas-educacional/ to generate Prisma client",
+    "Run npm run build to verify both backend and frontend compile without errors",
+    "Run npm test to verify all 32 tests pass"
+  ],
+  "acceptance_criteria": [
+    "Directory /projects/sandbox/sistemamodelo/saas-educacional/ exists with the complete project structure",
+    "Running 'npm run build' in /projects/sandbox/sistemamodelo/saas-educacional/ succeeds (tsc + next build)",
+    "Running 'npm test' in /projects/sandbox/sistemamodelo/saas-educacional/ passes all 32 tests",
+    "Running 'npx prisma validate' in /projects/sandbox/sistemamodelo/saas-educacional/ succeeds"
+  ],
+  "verification": [
+    "Run 'cd /projects/sandbox/sistemamodelo/saas-educacional && npm run build' and confirm zero errors",
+    "Run 'cd /projects/sandbox/sistemamodelo/saas-educacional && npm test' and confirm all tests pass",
+    "Run 'cd /projects/sandbox/sistemamodelo/saas-educacional && npx prisma validate' and confirm valid schema"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
