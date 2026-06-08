@@ -1,0 +1,19 @@
+{
+  "project_type": "Full-stack SaaS Educational Management System (Node.js/Express + React/Next.js + PostgreSQL/Prisma)",
+  "language": "TypeScript",
+  "build_system": "npm/pnpm with Next.js build system for frontend, ts-node/tsc for backend",
+  "test_framework": "Jest for unit tests, with potential for Playwright/Cypress for E2E",
+  "build_command": "cd /projects/sandbox/sistemamodelo/app && npm run build",
+  "test_command": "cd /projects/sandbox/sistemamodelo/app && npm test",
+  "verification_instructions": "1. Run npm install in /projects/sandbox/sistemamodelo/app\n2. Run npm run build to verify TypeScript compilation\n3. Run npm test to verify tests pass\n4. Verify Prisma schema validates with npx prisma validate",
+  "snapshot_or_generated_files": "Prisma client generated files (node_modules/.prisma/client). Regenerate with: npx prisma generate",
+  "setup_instructions": "1. cd /projects/sandbox/sistemamodelo/app\n2. npm install\n3. npx prisma generate\n4. npm run build",
+  "environment_constraints": "OPEN_INTERNET mode - full network access. Node.js v22 available with npm/pnpm/yarn. PostgreSQL is NOT pre-installed but Prisma schema can be generated and validated. TypeScript available globally.",
+  "contribution_requirements": "This is a greenfield project being built from scratch based on legacy system screenshots. All modules from the legacy system must be replicated with 100% operational fidelity. Only the visual interface may be modernized.",
+  "key_patterns": "Monorepo structure with /app directory containing both backend API and frontend. Prisma ORM for database schema. Express.js REST API backend. Next.js React frontend with modern UI (dark/light mode, sidebar navigation, dashboard). JWT authentication with refresh tokens. Multi-tenant (multi-company, multi-unit) architecture.",
+  "relevant_files": [
+    "/projects/sandbox/sistemamodelo/extracted_images/ (92 legacy system screenshots)",
+    "/projects/sandbox/sistemamodelo/app/ (new SaaS application root)"
+  ],
+  "directory_structure": "/projects/sandbox/sistemamodelo/ - Repository root\n/projects/sandbox/sistemamodelo/extracted_images/ - 92 screenshots from legacy system\n/projects/sandbox/sistemamodelo/app/ - New SaaS application (to be created)\n  /app/prisma/ - Prisma schema and migrations\n  /app/src/ - Source code\n    /app/src/backend/ - Express.js API\n    /app/src/frontend/ - Next.js React app\n    /app/src/shared/ - Shared types and utilities"
+}

@@ -1,0 +1,42 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Next.js React frontend with modern UI framework, authentication flow, main dashboard, sidebar navigation, and complete UI for Cadastros and Matriculas CRUD modules. This implements the modernized visual interface while preserving 100% of the operational logic from the legacy system. Design references: Salesforce, Hubspot, Notion, Monday, Linear, Stripe Dashboard style.",
+  "status": "pending",
+  "steps": [
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/ as a Next.js application with App Router, Tailwind CSS, and shadcn/ui component library",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/app/layout.tsx with root layout including dark/light mode support via next-themes, global styles, and font configuration",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/components/ui/ with base UI components: Button, Input, Select, Table, Card, Dialog, Form, Badge, Tabs, Dropdown, Toast/Notification",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/components/layout/Sidebar.tsx - Modern collapsible sidebar with all menu items matching the legacy system: Cadastro, Movimentacao, Pesquisa, Relatorio, Utilitario, Ajuda, Janela, Estagio, Financeiro. Each with their respective submenus",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/components/layout/Header.tsx - Top header with global search, user profile, notifications, and theme toggle",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/components/layout/DashboardLayout.tsx - Main layout wrapper combining sidebar, header, and content area",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/app/(auth)/login/page.tsx - Login page with email/password form, JWT token handling, and redirect logic",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/lib/auth.ts - Authentication utilities: token storage, refresh logic, protected route HOC/middleware",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/lib/api.ts - API client with axios/fetch wrapper, automatic token refresh, error handling",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/app/(dashboard)/page.tsx - Executive dashboard with KPI cards, charts placeholders, recent activity feed, quick actions",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/app/(dashboard)/cadastros/ directory with pages for all basic registration entities: cursos (courses), turmas (classes), disciplinas (disciplines), professores (teachers), alunos (students) - each with list view (data table with search/filter/pagination), create form, edit form, detail view",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/app/(dashboard)/matriculas/ directory with pages for enrollment management: list view, new enrollment form, enrollment details with action buttons (renew, transfer, cancel, suspend), enrollment history",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/components/shared/DataTable.tsx - Reusable data table component with sorting, filtering, pagination, row selection, and bulk actions",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/components/shared/FormBuilder.tsx - Reusable form component with validation (using react-hook-form + zod)",
+    "Create /projects/sandbox/sistemamodelo/app/src/frontend/hooks/ with custom hooks: useAuth, useApi, useToast, useDebounce, usePagination",
+    "Add frontend build configuration and ensure the complete frontend builds without errors"
+  ],
+  "acceptance_criteria": [
+    "Running 'npm run build' in the app directory successfully compiles both backend and frontend",
+    "The frontend has a working login page that communicates with the backend auth API",
+    "The sidebar navigation contains all menu items from the legacy system (Cadastro, Movimentacao, Pesquisa, Relatorio, Utilitario, Ajuda, Janela, Estagio, Financeiro)",
+    "The dashboard page renders with KPI card placeholders and layout structure",
+    "The Cadastros module has complete CRUD UI for at least 3 entities (courses, classes, students) with list/create/edit/detail views",
+    "The Matriculas module has enrollment list, creation form, and detail view with action buttons",
+    "Dark mode and light mode toggle works correctly",
+    "The DataTable component supports sorting, filtering, and pagination",
+    "Forms use validation with appropriate error messages"
+  ],
+  "verification": [
+    "Run 'cd /projects/sandbox/sistemamodelo/app && npm run build' and confirm zero compilation errors for both backend and frontend",
+    "Run 'cd /projects/sandbox/sistemamodelo/app && npm test' and confirm all tests pass",
+    "Verify that the Next.js pages compile without TypeScript errors by checking build output"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

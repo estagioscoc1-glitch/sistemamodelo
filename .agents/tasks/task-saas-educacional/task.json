@@ -1,0 +1,7 @@
+{
+  "task_id": "task-saas-educacional",
+  "task_description": "Transform the legacy desktop educational management system into a modern cloud-based SaaS platform. The new system replicates 100% of the operational logic, workflows, modules, menus, submenus, forms, fields, reports, permissions, and functional structure of the legacy system while modernizing only the visual interface. Tech stack: Node.js/Express backend, React/Next.js frontend, PostgreSQL with Prisma ORM, JWT authentication. Features: multi-tenant, multi-unit, multi-user, granular permissions, complete audit logging, REST API.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002"],
+  "blocked_reason": null
+}
