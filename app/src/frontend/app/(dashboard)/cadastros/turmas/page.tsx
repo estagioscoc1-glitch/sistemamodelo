@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { DataTable, type Column } from '@/components/shared/DataTable';
+import { useApi } from '@/hooks/useApi';
 
 interface Turma {
   id: string;
@@ -17,14 +18,6 @@ interface Turma {
   status: string;
   [key: string]: unknown;
 }
-
-const mockTurmas: Turma[] = [
-  { id: '1', nome: 'ADM-2024-1A', curso: 'Administracao', periodo: '2024.1', turno: 'Matutino', vagas: 40, alunos: 38, status: 'Ativa' },
-  { id: '2', nome: 'ADM-2024-1B', curso: 'Administracao', periodo: '2024.1', turno: 'Noturno', vagas: 40, alunos: 35, status: 'Ativa' },
-  { id: '3', nome: 'ENF-2024-1A', curso: 'Enfermagem', periodo: '2024.1', turno: 'Integral', vagas: 30, alunos: 30, status: 'Ativa' },
-  { id: '4', nome: 'SI-2024-1A', curso: 'Sistemas de Informacao', periodo: '2024.1', turno: 'Noturno', vagas: 45, alunos: 42, status: 'Ativa' },
-  { id: '5', nome: 'DIR-2023-2A', curso: 'Direito', periodo: '2023.2', turno: 'Noturno', vagas: 50, alunos: 48, status: 'Encerrada' },
-];
 
 const columns: Column<Turma>[] = [
   { key: 'nome', header: 'Turma', sortable: true },
@@ -46,6 +39,15 @@ const columns: Column<Turma>[] = [
 ];
 
 export default function TurmasPage() {
+  const { data, isLoading, error, execute } = useApi<Turma[]>('/cadastros/turmas');
+
+  useEffect(() => {
+    execute();
+  }, [execute]);
+
+  if (isLoading) return <div className="p-8 text-center">Carregando...</div>;
+  if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -64,7 +66,7 @@ export default function TurmasPage() {
       />
 
       <DataTable
-        data={mockTurmas}
+        data={data || []}
         columns={columns}
         searchKey="nome"
         searchPlaceholder="Buscar turmas..."

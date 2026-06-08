@@ -1,0 +1,33 @@
+{
+  "project_type": "SaaS Educational Management System - Express backend + Next.js frontend",
+  "language": "TypeScript",
+  "build_system": "npm with tsc for backend, next build for frontend",
+  "test_framework": "Jest with ts-jest preset, tests in /tests directory organized by module",
+  "build_command": "cd /projects/sandbox/sistemamodelo/saas-educacional && npm run build:backend",
+  "test_command": "cd /projects/sandbox/sistemamodelo/saas-educacional && npm test",
+  "verification_instructions": "1. Run npm run build:backend to compile TypeScript. 2. Run npm test for backend tests. 3. Run prisma validate to check schema. 4. Docker build to validate deployment config.",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "cd /projects/sandbox/sistemamodelo/saas-educacional && npm install",
+  "environment_constraints": "OPEN_INTERNET - full network access. Node.js 22 with npm and pnpm available. No PostgreSQL running locally.",
+  "contribution_requirements": "Branch: feat/remaining-modules. All code in TypeScript. Backend uses Express with Prisma ORM. Frontend uses Next.js 14 with App Router.",
+  "key_patterns": "Backend: services layer with Prisma queries, controllers delegate to services, routes use authMiddleware, errorHandler at top level. Frontend: pages use mock data arrays with DataTable component, useApi hook exists for real API calls but is not used in pages yet. API client in src/frontend/lib/api.ts handles auth tokens via localStorage.",
+  "relevant_files": [
+    "saas-educacional/package.json",
+    "saas-educacional/prisma/schema.prisma",
+    "saas-educacional/src/backend/server.ts",
+    "saas-educacional/src/backend/config/index.ts",
+    "saas-educacional/src/backend/middleware/auth.ts",
+    "saas-educacional/src/backend/middleware/errorHandler.ts",
+    "saas-educacional/src/backend/middleware/audit.ts",
+    "saas-educacional/src/backend/routes/index.ts",
+    "saas-educacional/src/backend/services/prisma.service.ts",
+    "saas-educacional/src/backend/services/auth.service.ts",
+    "saas-educacional/src/backend/services/cadastros.service.ts",
+    "saas-educacional/src/frontend/lib/api.ts",
+    "saas-educacional/src/frontend/lib/auth.ts",
+    "saas-educacional/src/frontend/hooks/useApi.ts",
+    "saas-educacional/src/frontend/hooks/useAuth.ts",
+    "saas-educacional/.env.example"
+  ],
+  "directory_structure": "saas-educacional/ - root with package.json, prisma/, src/backend/ (server, routes, controllers, services, middleware, utils), src/frontend/ (Next.js app with (auth) and (dashboard) route groups, components, hooks, lib), tests/ (organized by module: auth, cadastros, matriculas, notas, diario, estagios, financeiro, requerimentos, atas)"
+}

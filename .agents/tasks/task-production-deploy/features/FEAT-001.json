@@ -1,0 +1,42 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Production infrastructure: Dockerfile, docker-compose.yml, deploy scripts, migrations, seed, admin scripts, and security hardening for the Express backend",
+  "status": "completed",
+  "steps": [
+    "Step 1: Create Prisma initial migration. Create directory prisma/migrations/20240101000000_init/ and write migration.sql file that contains the full SQL CREATE TABLE statements for all 22 tables matching the schema.prisma. Include all enums (EnrollmentStatus, DiaryType, RequestStatus, PaymentStatus), all indexes, and all foreign keys. Also create prisma/migrations/migration_lock.toml with provider = postgresql.",
+    "Step 2: Install production security dependencies. Add to package.json dependencies: helmet, express-rate-limit, zod. Add to devDependencies: @types/helmet (if needed). Run npm install.",
+    "Step 3: Create security middleware. Create src/backend/middleware/security.ts that exports: (a) helmetMiddleware using helmet() with sensible defaults, (b) rateLimitMiddleware using express-rate-limit with windowMs: 15*60*1000, max: 100 for general and max: 5 for auth routes, (c) a validateBody function using zod that takes a zod schema and returns Express middleware validating req.body.",
+    "Step 4: Create input validation schemas. Create src/backend/validators/index.ts with zod schemas for: loginSchema (email, password, tenantId), studentSchema, courseSchema, classSchema, enrollmentSchema, gradeSchema, attendanceSchema, diaryEntrySchema, internshipSchema, requestSchema, minutesSchema, financialAccountSchema, financialPaymentSchema.",
+    "Step 5: Update src/backend/server.ts to use security middleware: import and apply helmetMiddleware before cors, apply general rateLimitMiddleware to /api, and create a stricter rate limiter for /api/auth routes. Update CORS config to support multiple origins from env var.",
+    "Step 6: Create .env.production.example with production-ready configuration: DATABASE_URL with placeholder, secure JWT_SECRET (instruction to generate with openssl rand -base64 64), CORS_ORIGIN for production domain, NODE_ENV=production, PORT=3001.",
+    "Step 7: Create Dockerfile at saas-educacional/Dockerfile for the backend: multi-stage build using node:22-alpine, install dependencies, copy prisma schema, run prisma generate, build TypeScript, then production stage copies only dist/ and node_modules, exposes port 3001, runs prisma migrate deploy then node dist/backend/server.js.",
+    "Step 8: Create docker-compose.yml at saas-educacional/docker-compose.yml with services: postgres (image postgres:16-alpine, volumes for data persistence, healthcheck), backend (build from Dockerfile, depends_on postgres healthy, env vars from .env), frontend (build from src/frontend, ports 3000).",
+    "Step 9: Create vercel.json at saas-educacional/src/frontend/vercel.json for frontend deployment with build settings and environment variable configuration for NEXT_PUBLIC_API_URL.",
+    "Step 10: Create prisma/seed.ts with seed data: one default tenant, one admin role with full permissions on all modules, one admin user (admin@sistema.com / Admin@123) with bcrypt hashed password, basic permissions for all 9 modules (cadastros, matriculas, notas, diario, estagios, financeiro, requerimentos, atas, auth).",
+    "Step 11: Create scripts/create-admin.ts - a standalone script that accepts email, password, name as CLI args (or prompts defaults) and creates an admin user in the database with full permissions. Uses Prisma client directly.",
+    "Step 12: Create scripts/import-csv.ts - a CSV import utility that reads CSV files and imports data into the database. Supports importing: students (alunos.csv), courses (cursos.csv), teachers (professores.csv). Accepts --type and --file arguments.",
+    "Step 13: Create scripts/backup.sh - a shell script that runs pg_dump with connection string from DATABASE_URL env var, saves to timestamped file in ./backups/ directory.",
+    "Step 14: Create deploy.sh at saas-educacional/deploy.sh - automated deploy script that: checks prerequisites (docker, docker-compose), copies .env.production.example to .env if not exists, runs docker-compose build, runs docker-compose up -d, waits for postgres health, runs prisma migrate deploy via docker exec, runs seed if first deploy.",
+    "Step 15: Update package.json scripts to add: prisma:migrate (prisma migrate deploy), prisma:seed (ts-node prisma/seed.ts), db:backup (bash scripts/backup.sh), create-admin (ts-node scripts/create-admin.ts), import-csv (ts-node scripts/import-csv.ts).",
+    "Step 16: Create a comprehensive README.md at saas-educacional/README.md with: project description, tech stack, prerequisites (Node.js 22, Docker, PostgreSQL), quick start instructions, environment setup, deployment guide (Docker and manual), admin setup, CSV import usage, backup/restore procedures, and API endpoints list."
+  ],
+  "acceptance_criteria": [
+    "prisma validate passes with the migration files present",
+    "Backend compiles with npm run build:backend without errors including new security middleware",
+    "Dockerfile builds successfully with docker build",
+    "docker-compose.yml is valid yaml with postgres, backend, and frontend services",
+    "seed.ts uses proper bcrypt hashing and creates admin user",
+    "README.md has complete deployment instructions",
+    "deploy.sh is executable and has proper error handling",
+    "All zod validation schemas match the Prisma model fields",
+    "Rate limiting is configured for both general and auth-specific routes"
+  ],
+  "verification": [
+    "Run: cd /projects/sandbox/sistemamodelo/saas-educacional && npx prisma validate",
+    "Run: cd /projects/sandbox/sistemamodelo/saas-educacional && npm run build:backend",
+    "Run: cd /projects/sandbox/sistemamodelo/saas-educacional && npm test"
+  ],
+  "blocked_reason": null,
+  "findings": "All 16 steps implemented successfully. Prisma validate passes, backend compiles cleanly with new security middleware, all 99 tests pass. Zod v4 uses safeParse with issues array having PropertyKey[] for path (needed .map(String).join). deploy.sh and backup.sh are executable. Installed helmet, express-rate-limit, zod as production dependencies."
+}

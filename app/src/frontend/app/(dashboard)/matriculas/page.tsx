@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { DataTable, type Column } from '@/components/shared/DataTable';
+import { useApi } from '@/hooks/useApi';
 
 interface Matricula {
   id: string;
@@ -24,15 +25,6 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Trancada: 'warning',
 };
 
-const mockMatriculas: Matricula[] = [
-  { id: '1', aluno: 'Ana Silva Santos', curso: 'Administracao', turma: 'ADM-2024-1A', dataMatricula: '15/01/2024', status: 'Ativa' },
-  { id: '2', aluno: 'Joao Pedro Oliveira', curso: 'Sistemas de Informacao', turma: 'SI-2024-1A', dataMatricula: '16/01/2024', status: 'Ativa' },
-  { id: '3', aluno: 'Maria Fernandes Costa', curso: 'Enfermagem', turma: 'ENF-2024-1A', dataMatricula: '17/01/2024', status: 'Renovada' },
-  { id: '4', aluno: 'Carlos Eduardo Lima', curso: 'Direito', turma: 'DIR-2023-2A', dataMatricula: '10/07/2023', status: 'Trancada' },
-  { id: '5', aluno: 'Juliana Almeida', curso: 'Pedagogia', turma: 'PED-2023-1A', dataMatricula: '20/01/2023', status: 'Cancelada' },
-  { id: '6', aluno: 'Pedro Santos', curso: 'Administracao', turma: 'ADM-2024-1B', dataMatricula: '18/01/2024', status: 'Ativa' },
-];
-
 const columns: Column<Matricula>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
   { key: 'curso', header: 'Curso', sortable: true },
@@ -48,6 +40,15 @@ const columns: Column<Matricula>[] = [
 ];
 
 export default function MatriculasPage() {
+  const { data, isLoading, error, execute } = useApi<Matricula[]>('/matriculas');
+
+  useEffect(() => {
+    execute();
+  }, [execute]);
+
+  if (isLoading) return <div className="p-8 text-center">Carregando...</div>;
+  if (error) return <div className="p-8 text-center text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -65,7 +66,7 @@ export default function MatriculasPage() {
       />
 
       <DataTable
-        data={mockMatriculas}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

@@ -1,0 +1,31 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Connect all 35 frontend pages that use mock data to the real backend API using the existing useApi hook and api client",
+  "status": "in_progress",
+  "steps": [
+    "Step 1: Update ALL listing pages under cadastros/ to replace mock data with real API calls. Each page must: (a) import useApi and useEffect from react, (b) call useApi with the correct endpoint (e.g., /cadastros/alunos, /cadastros/cursos, /cadastros/turmas, /cadastros/disciplinas, /cadastros/professores), (c) call execute() in useEffect, (d) render loading state, error state, and data from the API. Pages to update: cadastros/alunos/page.tsx, cadastros/cursos/page.tsx, cadastros/turmas/page.tsx, cadastros/disciplinas/page.tsx, cadastros/professores/page.tsx",
+    "Step 2: Update ALL listing pages under matriculas/ - same pattern as Step 1. Endpoint: /matriculas. Pages: matriculas/page.tsx",
+    "Step 3: Update ALL listing pages under notas/ - same pattern. Endpoints vary: /notas for main list, /notas/lancamento, /notas/alteracao, etc. Pages: notas/page.tsx, notas/lancamento/page.tsx, notas/alteracao/page.tsx, notas/fechamento/page.tsx, notas/historico/page.tsx, notas/boletins/page.tsx, notas/medias/page.tsx, notas/recuperacao/page.tsx",
+    "Step 4: Update ALL listing pages under diario/ - endpoints: /diario/chamadas, /diario/frequencia. Pages: diario/chamadas/page.tsx, diario/frequencia/page.tsx",
+    "Step 5: Update ALL listing pages under estagio/ - endpoints: /estagios, /estagios/empresas, /estagios/controle, /estagios/acompanhamento, /estagios/convenios. Pages: estagio/page.tsx, estagio/empresas/page.tsx, estagio/controle/page.tsx, estagio/acompanhamento/page.tsx, estagio/convenios/page.tsx",
+    "Step 6: Update ALL listing pages under financeiro/ - endpoints: /financeiro/contas-receber, /financeiro/mensalidades, /financeiro/parcelas, /financeiro/baixas, /financeiro/renegociacoes, /financeiro/fluxo, /financeiro/inadimplencia, /financeiro/[id]. Pages: financeiro/contas-receber/page.tsx, financeiro/mensalidades/page.tsx, financeiro/[id]/page.tsx, financeiro/parcelas/page.tsx, financeiro/baixas/page.tsx, financeiro/renegociacoes/page.tsx, financeiro/fluxo/page.tsx, financeiro/inadimplencia/page.tsx",
+    "Step 7: Update ALL listing pages under requerimentos/ and atas/ - endpoints: /requerimentos, /atas. Pages: requerimentos/page.tsx, atas/page.tsx",
+    "Step 8: Update remaining pages that use mock data: movimentacao/page.tsx, pesquisa/page.tsx, ajuda/page.tsx, janela/page.tsx - these may not have API endpoints, keep them as static/informational pages but remove fake mock data if present.",
+    "Step 9: Update the Dashboard page (dashboard)/page.tsx to fetch real KPI data from a /dashboard/stats endpoint (or keep hardcoded values but add a TODO comment noting this should be connected to real aggregation queries later).",
+    "Step 10: Add .env.local.example in src/frontend/ with NEXT_PUBLIC_API_URL=http://localhost:3001/api to document the required env var for frontend-backend connection."
+  ],
+  "acceptance_criteria": [
+    "No pages import or reference mockAlunos, mockCursos, mockTurmas, or any mock* variables - they all use useApi or api.get",
+    "All listing pages show loading state while fetching",
+    "All listing pages show error message if API call fails",
+    "Frontend .env.local.example exists with NEXT_PUBLIC_API_URL",
+    "The DataTable component still receives data from the API response instead of static arrays"
+  ],
+  "verification": [
+    "Run: grep -rn 'mock' /projects/sandbox/sistemamodelo/saas-educacional/src/frontend/app/ | grep -v node_modules | wc -l should be 0 or near 0",
+    "Run: cd /projects/sandbox/sistemamodelo/saas-educacional/src/frontend && npx next build (frontend compiles without type errors)"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/shared/PageHeader';
 
+// TODO: Connect to real API endpoint (e.g., /dashboard/stats) for live KPI data
 const kpiCards = [
   { title: 'Total de Alunos', value: '1.247', change: '+12% este mes', color: 'text-blue-600' },
   { title: 'Matriculas Ativas', value: '983', change: '+5% este mes', color: 'text-green-600' },
@@ -12,6 +13,7 @@ const kpiCards = [
   { title: 'Taxa de Frequencia', value: '94.2%', change: '+2% este mes', color: 'text-orange-600' },
 ];
 
+// TODO: Connect to real API endpoint for recent activity feed
 const recentActivity = [
   { type: 'matricula', description: 'Nova matricula - Ana Silva no curso de Administracao', time: 'Ha 5 minutos' },
   { type: 'nota', description: 'Lancamento de notas - Turma 3A - Matematica', time: 'Ha 15 minutos' },
