@@ -1,7 +1,14 @@
 {
   "task_id": "task-saas-educacional-2",
   "task_description": "Relocate the fully-built SaaS educational management system from /projects/sandbox/sistemamodelo/app/ to /projects/sandbox/sistemamodelo/saas-educacional/ as required by the user specification, then verify everything builds and passes tests at the new location.",
-  "status": "in_progress",
+  "status": "completed",
   "feature_order": ["FEAT-001"],
-  "blocked_reason": null
+  "blocked_reason": null,
+  "verification": {
+    "build": "pass",
+    "tests": "pass",
+    "test_quality": "pass",
+    "docker_build": "skipped",
+    "summary": "Project successfully relocated to /projects/sandbox/sistemamodelo/saas-educacional/. Backend TypeScript compiles cleanly. Next.js frontend builds successfully with 14 routes. Prisma schema validates with 22 models. All 32 tests pass (auth: login/refresh/logout, cadastros: courses/classes/students CRUD, matriculas: full lifecycle). Tests exercise real service layer code paths with proper business rule validation."
+  }
 }
