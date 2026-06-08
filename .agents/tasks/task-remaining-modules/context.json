@@ -1,0 +1,32 @@
+{
+  "project_type": "Full-stack TypeScript SaaS educational management system with Express backend and Next.js frontend",
+  "language": "TypeScript",
+  "build_system": "npm scripts with tsc for backend, next build for frontend",
+  "test_framework": "Jest with ts-jest, mocking @prisma/client, testing service layer methods",
+  "build_command": "cd /projects/sandbox/sistemamodelo/saas-educacional && npx tsc --noEmit",
+  "test_command": "cd /projects/sandbox/sistemamodelo/saas-educacional && npx jest --passWithNoTests",
+  "verification_instructions": "1. Run npx tsc --noEmit to verify TypeScript compiles. 2. Run npx jest --passWithNoTests to run all tests. 3. Run npx prisma validate to verify schema.",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "cd /projects/sandbox/sistemamodelo/saas-educacional && npm install (already done, node_modules exists)",
+  "environment_constraints": "OPEN_INTERNET network mode. No database connection available (tests mock Prisma). Frontend pages use mock data. No Docker.",
+  "contribution_requirements": "Follow exact same patterns as existing matriculas module for backend (routes/controllers/services). Follow exact same patterns as cadastros/cursos for frontend pages (list, create, detail with DataTable, PageHeader, Card, form patterns).",
+  "key_patterns": "Backend: class-based services exported as singletons, class-based controllers with try/catch and next(error), Router files with authMiddleware, routes/index.ts aggregates all route modules. Frontend: 'use client' pages with mock data, PageHeader with breadcrumbs, DataTable for listings, Card/CardContent/CardHeader for forms, Select/Input for form fields, useToast for success messages, Badge for status. Tests: mock @prisma/client at top, import service class, test each method with jest mocks.",
+  "relevant_files": [
+    "saas-educacional/src/backend/routes/index.ts",
+    "saas-educacional/src/backend/routes/matriculas.routes.ts",
+    "saas-educacional/src/backend/controllers/matriculas.controller.ts",
+    "saas-educacional/src/backend/services/matriculas.service.ts",
+    "saas-educacional/src/backend/utils/pagination.ts",
+    "saas-educacional/src/backend/utils/response.ts",
+    "saas-educacional/src/backend/middleware/auth.ts",
+    "saas-educacional/src/frontend/app/(dashboard)/matriculas/page.tsx",
+    "saas-educacional/src/frontend/app/(dashboard)/matriculas/nova/page.tsx",
+    "saas-educacional/src/frontend/app/(dashboard)/cadastros/cursos/page.tsx",
+    "saas-educacional/src/frontend/app/(dashboard)/cadastros/cursos/[id]/page.tsx",
+    "saas-educacional/src/frontend/components/shared/DataTable.tsx",
+    "saas-educacional/src/frontend/components/shared/PageHeader.tsx",
+    "saas-educacional/prisma/schema.prisma",
+    "saas-educacional/tests/matriculas/matriculas.test.ts"
+  ],
+  "directory_structure": "saas-educacional/src/backend/ - Express API (routes/, controllers/, services/, middleware/, utils/, config/). saas-educacional/src/frontend/ - Next.js App Router (app/(dashboard)/ for pages, components/ for shared/ui, hooks/, lib/). saas-educacional/prisma/ - Prisma schema. saas-educacional/tests/ - Jest tests organized by module."
+}

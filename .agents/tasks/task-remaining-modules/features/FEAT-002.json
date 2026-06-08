@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Implement ESTAGIOS (Internships) and FINANCEIRO (Financial) backend modules with full CRUD endpoints, plus corresponding frontend pages with list/create/detail views using mock data",
+  "status": "completed",
+  "steps": [
+    "Create src/backend/services/estagios.service.ts - EstagiosService class with methods: listInternships (paginated, filter by studentId/status/companyId), getInternshipById, createInternship, updateInternship, listCompanies (paginated internship companies), getCompanyById, createCompany, updateCompany. Use prisma.internship and prisma.internshipCompany models.",
+    "Create src/backend/controllers/estagios.controller.ts - EstagiosController class following same pattern as MatriculasController.",
+    "Create src/backend/routes/estagios.routes.ts - Router with authMiddleware, routes: GET / (list internships), POST / (create), GET /:id, PUT /:id, GET /empresas (list companies), POST /empresas (create company), GET /empresas/:id, PUT /empresas/:id.",
+    "Create src/backend/services/financeiro.service.ts - FinanceiroService class with methods: listAccounts (paginated financial accounts, filter by studentId/status), getAccountById, createAccount, updateAccount, listPayments (paginated payments, filter by accountId/status/dueDate range), getPaymentById, createPayment, updatePayment (for baixa/payment), bulkCreatePayments (generate installments for an account), getOverdueReport (inadimplencia - overdue payments). Use prisma.financialAccount and prisma.financialPayment models.",
+    "Create src/backend/controllers/financeiro.controller.ts - FinanceiroController class following same pattern.",
+    "Create src/backend/routes/financeiro.routes.ts - Router with authMiddleware, routes: GET /contas (list accounts), POST /contas (create), GET /contas/:id, PUT /contas/:id, GET /pagamentos (list payments), POST /pagamentos (create), POST /pagamentos/gerar (bulk generate installments), PUT /pagamentos/:id (update/baixa), GET /inadimplencia (overdue report), GET /fluxo (cash flow summary).",
+    "Register both new route modules in src/backend/routes/index.ts - add imports for estagios.routes and financeiro.routes, add router.use('/estagios', estagiosRoutes) and router.use('/financeiro', financeiroRoutes).",
+    "Create frontend pages for ESTAGIOS module: src/frontend/app/(dashboard)/estagio/page.tsx (main listing page of internships with DataTable, columns: aluno, empresa, dataInicio, dataFim, cargaHoraria, status. Mock data. Search by student), src/frontend/app/(dashboard)/estagio/cadastro/page.tsx (form to create internship - Select student, company, dates, workload, supervisor), src/frontend/app/(dashboard)/estagio/[id]/page.tsx (detail/edit with Tabs: dados, acompanhamento), src/frontend/app/(dashboard)/estagio/empresas/page.tsx (companies listing with DataTable), src/frontend/app/(dashboard)/estagio/empresas/nova/page.tsx (form to create company).",
+    "Create frontend pages for FINANCEIRO module: src/frontend/app/(dashboard)/financeiro/page.tsx (overview page with summary cards showing totals), src/frontend/app/(dashboard)/financeiro/contas-receber/page.tsx (list of accounts with DataTable, columns: aluno, descricao, valorTotal, vencimento, status), src/frontend/app/(dashboard)/financeiro/mensalidades/page.tsx (list of payments/installments with DataTable), src/frontend/app/(dashboard)/financeiro/novo/page.tsx (form to create account with installment generation), src/frontend/app/(dashboard)/financeiro/[id]/page.tsx (account detail with payments list).",
+    "Create tests/estagios/estagios.test.ts - Mock @prisma/client with internship and internshipCompany model methods. Test EstagiosService: listInternships, getInternshipById, createInternship, updateInternship, listCompanies, createCompany.",
+    "Create tests/financeiro/financeiro.test.ts - Mock @prisma/client with financialAccount and financialPayment model methods. Test FinanceiroService: listAccounts, getAccountById, createAccount, listPayments, createPayment, bulkCreatePayments, getOverdueReport."
+  ],
+  "acceptance_criteria": [
+    "npx tsc --noEmit passes with no errors including all new files",
+    "npx jest --passWithNoTests passes including new test files for estagios and financeiro",
+    "src/backend/routes/index.ts imports and registers /estagios and /financeiro routes",
+    "All frontend pages render valid React components with 'use client' directive",
+    "New backend services use prisma models Internship, InternshipCompany, FinancialAccount, FinancialPayment as defined in schema"
+  ],
+  "verification": [
+    "Run: cd /projects/sandbox/sistemamodelo/saas-educacional && npx tsc --noEmit",
+    "Run: cd /projects/sandbox/sistemamodelo/saas-educacional && npx jest --passWithNoTests"
+  ],
+  "blocked_reason": null,
+  "findings": "All 77 tests pass (27 new tests from estagios and financeiro modules). TypeScript compiles with no errors. Had to type the status field as a union of PaymentStatus enum values instead of plain string to satisfy Prisma generated types."
+}

@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Implement NOTAS (Grades) and DIARIO (Diary/Attendance) backend modules with full CRUD endpoints, plus corresponding frontend pages with list/create/detail views using mock data",
+  "status": "completed",
+  "steps": [
+    "Create src/backend/services/notas.service.ts - GradesService class with methods: list (paginated, filter by classId/disciplineId/studentId/period), getById, create (grade entry), update, bulkCreate (batch grade entry for a class), getStudentReport (boletim - all grades for a student), getAverages (medias by discipline), close (fechamento - mark grades as final for a period). Use prisma.grade model. Follow MatriculasService pattern exactly.",
+    "Create src/backend/controllers/notas.controller.ts - NotasController class with methods mapping to each service method. Follow MatriculasController pattern (AuthenticatedRequest, try/catch/next, parsePagination, AppError for auth check).",
+    "Create src/backend/routes/notas.routes.ts - Router with authMiddleware, routes: GET / (list), POST / (create), POST /bulk (batch create), GET /boletim/:studentId (student report), GET /medias (averages), POST /fechamento (close period), GET /:id (getById), PUT /:id (update).",
+    "Create src/backend/services/diario.service.ts - DiarioService class with methods: listEntries (paginated diary entries, filter by classId/disciplineId/type/date), getEntryById, createEntry, updateEntry, listAttendance (paginated attendance records, filter by classId/disciplineId/date), createAttendance (single), bulkCreateAttendance (batch attendance for a class on a date), updateAttendance, getFrequencyReport (frequency stats for a student). Use prisma.diaryEntry and prisma.attendance models.",
+    "Create src/backend/controllers/diario.controller.ts - DiarioController class following same pattern.",
+    "Create src/backend/routes/diario.routes.ts - Router with authMiddleware, routes: GET /entries (list diary entries), POST /entries (create), GET /entries/:id, PUT /entries/:id, GET /attendance (list attendance), POST /attendance (create single), POST /attendance/bulk (batch), PUT /attendance/:id, GET /frequency/:studentId (report).",
+    "Register both new route modules in src/backend/routes/index.ts - add imports for notas.routes and diario.routes, add router.use('/notas', notasRoutes) and router.use('/diario', diarioRoutes).",
+    "Create frontend pages for NOTAS module: src/frontend/app/(dashboard)/notas/page.tsx (main listing page showing grades with DataTable, columns: aluno, disciplina, turma, nota, periodo, status. Mock data with 6+ entries. Search by student name. Actions: link to detail), src/frontend/app/(dashboard)/notas/lancamento/page.tsx (form to enter grades for a class - Select for turma, disciplina, periodo, then a table of students with Input fields for grade values), src/frontend/app/(dashboard)/notas/[id]/page.tsx (detail/edit page with Card, Tabs for dados and historico).",
+    "Create frontend pages for DIARIO module: src/frontend/app/(dashboard)/diario/page.tsx (overview page with links to chamadas and notas sub-pages), src/frontend/app/(dashboard)/diario/chamadas/page.tsx (attendance page - select turma/disciplina/date, then show student list with checkboxes for present/absent), src/frontend/app/(dashboard)/diario/notas/page.tsx (diary grades page - similar to notas/lancamento but focused on daily content recording).",
+    "Create tests/notas/notas.test.ts - Mock @prisma/client with grade model methods. Test NotasService: list (paginated), getById (found/not found), create, update, bulkCreate, getStudentReport, close. Follow tests/matriculas/matriculas.test.ts pattern exactly.",
+    "Create tests/diario/diario.test.ts - Mock @prisma/client with diaryEntry and attendance model methods. Test DiarioService: listEntries, createEntry, listAttendance, bulkCreateAttendance, getFrequencyReport."
+  ],
+  "acceptance_criteria": [
+    "npx tsc --noEmit passes with no errors including all new files",
+    "npx jest --passWithNoTests passes including new test files for notas and diario",
+    "src/backend/routes/index.ts imports and registers /notas and /diario routes",
+    "All frontend pages render valid React components with 'use client' directive",
+    "New backend services use prisma models Grade, Attendance, DiaryEntry as defined in schema"
+  ],
+  "verification": [
+    "Run: cd /projects/sandbox/sistemamodelo/saas-educacional && npx tsc --noEmit",
+    "Run: cd /projects/sandbox/sistemamodelo/saas-educacional && npx jest --passWithNoTests"
+  ],
+  "blocked_reason": null,
+  "findings": "All 50 tests pass (18 new tests in notas and diario suites). TypeScript compiles without errors. Backend: notas.service, notas.controller, notas.routes, diario.service, diario.controller, diario.routes created and registered in routes/index.ts. Frontend: /notas (list), /notas/lancamento (batch entry form), /notas/[id] (detail with tabs), /diario (overview), /diario/chamadas (attendance with checkboxes), /diario/notas (content recording form) pages created."
+}

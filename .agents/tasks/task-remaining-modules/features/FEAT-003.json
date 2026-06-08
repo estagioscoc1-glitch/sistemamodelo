@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Implement REQUERIMENTOS (Requests) and ATAS (Minutes) backend modules with full CRUD endpoints, plus corresponding frontend pages with list/create/detail views using mock data",
+  "status": "completed",
+  "steps": [
+    "Create src/backend/services/requerimentos.service.ts - RequerimentosService class with methods: list (paginated requests, filter by studentId/status/type), getById, create (new request with auto-generated protocol number), update, updateStatus (change status with response text and responseDate), listByStudent (all requests for a student). Use prisma.request model. Protocol format: REQ-YYYY-NNNNN (year + sequential).",
+    "Create src/backend/controllers/requerimentos.controller.ts - RequerimentosController class following same pattern.",
+    "Create src/backend/routes/requerimentos.routes.ts - Router with authMiddleware, routes: GET / (list), POST / (create), GET /:id, PUT /:id, PATCH /:id/status (update status/parecer), GET /aluno/:studentId (by student).",
+    "Create src/backend/services/atas.service.ts - AtasService class with methods: list (paginated minutes, filter by type/status/date range), getById, create, update, updateStatus (change status: DRAFT/APPROVED/PUBLISHED), duplicate (create a new version based on existing). Use prisma.minutes model.",
+    "Create src/backend/controllers/atas.controller.ts - AtasController class following same pattern.",
+    "Create src/backend/routes/atas.routes.ts - Router with authMiddleware, routes: GET / (list), POST / (create), GET /:id, PUT /:id, PATCH /:id/status (update status), POST /:id/duplicate (create new version).",
+    "Register both new route modules in src/backend/routes/index.ts - add imports for requerimentos.routes and atas.routes, add router.use('/requerimentos', requerimentosRoutes) and router.use('/atas', atasRoutes).",
+    "Create frontend pages for REQUERIMENTOS module: src/frontend/app/(dashboard)/requerimentos/page.tsx (listing with DataTable, columns: protocolo, aluno, tipo, descricao, dataRequerimento, status. Mock data with 6+ entries. Badge for status with color mapping: Pendente=warning, Em Andamento=default, Aprovado=success, Rejeitado=destructive, Concluido=secondary), src/frontend/app/(dashboard)/requerimentos/novo/page.tsx (form - Select student, type options: Segunda Via, Trancamento, Aproveitamento, Revisao de Nota, Declaracao, Outros. Textarea for description), src/frontend/app/(dashboard)/requerimentos/[id]/page.tsx (detail with Card showing request info, status timeline, and response/parecer section).",
+    "Create frontend pages for ATAS module: src/frontend/app/(dashboard)/atas/page.tsx (listing with DataTable, columns: titulo, data, tipo, participantes, status. Mock data. Badge for status), src/frontend/app/(dashboard)/atas/nova/page.tsx (form - Input title, date, Select type: Reuniao de Conselho, Assembleia, Colegiado, Outros. Textarea content, Input participants), src/frontend/app/(dashboard)/atas/[id]/page.tsx (detail/edit with Tabs: conteudo and versoes).",
+    "Create tests/requerimentos/requerimentos.test.ts - Mock @prisma/client with request model methods. Test RequerimentosService: list, getById, create (verify protocol generation), update, updateStatus.",
+    "Create tests/atas/atas.test.ts - Mock @prisma/client with minutes model methods. Test AtasService: list, getById, create, update, updateStatus, duplicate."
+  ],
+  "acceptance_criteria": [
+    "npx tsc --noEmit passes with no errors including all new files",
+    "npx jest --passWithNoTests passes including new test files for requerimentos and atas",
+    "src/backend/routes/index.ts imports and registers /requerimentos and /atas routes",
+    "All frontend pages render valid React components with 'use client' directive",
+    "New backend services use prisma models Request and Minutes as defined in schema"
+  ],
+  "verification": [
+    "Run: cd /projects/sandbox/sistemamodelo/saas-educacional && npx tsc --noEmit",
+    "Run: cd /projects/sandbox/sistemamodelo/saas-educacional && npx jest --passWithNoTests"
+  ],
+  "blocked_reason": null,
+  "findings": "All 99 tests pass (22 new tests added - 12 for requerimentos, 10 for atas). TypeScript compilation clean. Both route modules properly registered in index.ts."
+}
