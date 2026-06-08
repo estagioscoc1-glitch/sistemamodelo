@@ -1,0 +1,43 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Project scaffolding, database schema design with Prisma, and backend API foundation. This feature establishes the complete project structure including: monorepo setup with TypeScript, Prisma schema with all entities from the legacy system (multi-tenant architecture with companies, units, users, permissions, students, enrollments, grades, attendance, internships, requests, financial records, etc.), Express.js backend with authentication (JWT + refresh tokens), base middleware, and route structure for all modules.",
+  "status": "completed",
+  "steps": [
+    "Create the /projects/sandbox/sistemamodelo/app/ directory with package.json configured for TypeScript, Express.js, Prisma, Next.js, and all necessary dependencies",
+    "Create tsconfig.json with appropriate TypeScript configuration for both backend and frontend",
+    "Create /projects/sandbox/sistemamodelo/app/prisma/schema.prisma with the complete database schema including: Tenant (empresa), Unit (unidade), User (usuario), Permission/Role (permissao/perfil), Course (curso), Class (turma), Discipline (disciplina), Student (aluno), Enrollment (matricula), Grade (nota), Attendance (frequencia/chamada), DiaryEntry (diario), Internship (estagio), Request (requerimento), Minutes (ata), FinancialRecord (financeiro), FinancialPayment (mensalidade/parcela), AuditLog (auditoria). All entities must support multi-tenant isolation, audit trails, and soft-delete patterns.",
+    "Create /projects/sandbox/sistemamodelo/app/src/backend/server.ts as the Express.js entry point with CORS, body-parser, error handling middleware",
+    "Create /projects/sandbox/sistemamodelo/app/src/backend/config/ with environment configuration, database connection, and JWT settings",
+    "Create /projects/sandbox/sistemamodelo/app/src/backend/middleware/ with authentication middleware (JWT verification), authorization middleware (role-based), audit logging middleware, and error handling middleware",
+    "Create /projects/sandbox/sistemamodelo/app/src/backend/routes/ with route files for all modules: auth.routes.ts, cadastros.routes.ts, matriculas.routes.ts, notas.routes.ts, diario.routes.ts, estagios.routes.ts, requerimentos.routes.ts, atas.routes.ts, financeiro.routes.ts, pesquisa.routes.ts, relatorios.routes.ts, movimentacao.routes.ts, utilitarios.routes.ts",
+    "Create /projects/sandbox/sistemamodelo/app/src/backend/controllers/ with controller stubs for each module",
+    "Create /projects/sandbox/sistemamodelo/app/src/backend/services/ with service layer stubs",
+    "Create /projects/sandbox/sistemamodelo/app/src/backend/utils/ with helper utilities (pagination, response formatters, validators)",
+    "Create /projects/sandbox/sistemamodelo/app/src/shared/types/ with shared TypeScript interfaces and types",
+    "Implement the authentication system: POST /api/auth/login, POST /api/auth/refresh, POST /api/auth/logout with JWT + refresh token pattern",
+    "Implement complete CRUD for Cadastros (basic registrations) module: courses, classes, disciplines, teachers, students with full REST API endpoints",
+    "Implement complete CRUD for Matriculas (enrollments) module: create enrollment, renew, transfer, cancel, suspend with full REST API endpoints",
+    "Add Jest test configuration and write basic tests for authentication and CRUD operations"
+  ],
+  "acceptance_criteria": [
+    "Running 'npm install' in /projects/sandbox/sistemamodelo/app/ succeeds without errors",
+    "Running 'npx prisma validate' succeeds, confirming the schema is valid",
+    "Running 'npx prisma generate' succeeds, generating the Prisma client",
+    "Running 'npm run build' compiles TypeScript without errors",
+    "Running 'npm test' passes all unit tests for authentication and CRUD endpoints",
+    "The Prisma schema contains at minimum 15 models representing all major entities of the legacy system",
+    "The API has working authentication endpoints (login, refresh, logout) with JWT",
+    "The Cadastros module has full CRUD REST API endpoints (GET/POST/PUT/DELETE) for at least 3 entity types",
+    "The Matriculas module has REST API endpoints for enrollment lifecycle (create, renew, transfer, cancel)"
+  ],
+  "verification": [
+    "Run 'cd /projects/sandbox/sistemamodelo/app && npm install' and confirm success",
+    "Run 'cd /projects/sandbox/sistemamodelo/app && npx prisma validate' and confirm valid schema",
+    "Run 'cd /projects/sandbox/sistemamodelo/app && npx prisma generate' and confirm client generation",
+    "Run 'cd /projects/sandbox/sistemamodelo/app && npm run build' and confirm zero compilation errors",
+    "Run 'cd /projects/sandbox/sistemamodelo/app && npm test' and confirm all tests pass"
+  ],
+  "blocked_reason": null,
+  "findings": "Successfully implemented full project scaffolding. Key notes: (1) @types/express v5 uses ParamsDictionary with string|string[] index signature, requiring explicit type handling for req.params.id. (2) Prisma validate/generate requires a .env file with DATABASE_URL set even though no DB connection is made. (3) jwt.sign expiresIn option needs explicit type cast for SignOptions compatibility with newer @types/jsonwebtoken. All 32 tests pass, TypeScript compiles cleanly, Prisma schema validates with 22 models."
+}

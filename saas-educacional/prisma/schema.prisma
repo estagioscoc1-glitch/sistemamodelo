@@ -1,0 +1,586 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// MULTI-TENANT ROOT
+// ==========================================
+
+model Tenant {
+  id        String    @id @default(uuid())
+  name      String
+  cnpj      String    @unique
+  email     String?
+  phone     String?
+  address   String?
+  city      String?
+  state     String?
+  zipCode   String?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  units             Unit[]
+  users             User[]
+  roles             Role[]
+  courses           Course[]
+  classes           Class[]
+  disciplines       Discipline[]
+  teachers          Teacher[]
+  students          Student[]
+  enrollments       Enrollment[]
+  grades            Grade[]
+  attendances       Attendance[]
+  diaryEntries      DiaryEntry[]
+  internships       Internship[]
+  internshipCompanies InternshipCompany[]
+  requests          Request[]
+  minutes           Minutes[]
+  financialAccounts FinancialAccount[]
+  financialPayments FinancialPayment[]
+  auditLogs         AuditLog[]
+
+  @@map("tenants")
+}
+
+// ==========================================
+// ORGANIZATIONAL STRUCTURE
+// ==========================================
+
+model Unit {
+  id        String    @id @default(uuid())
+  tenantId  String
+  name      String
+  code      String?
+  address   String?
+  city      String?
+  state     String?
+  zipCode   String?
+  phone     String?
+  email     String?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  users     User[]
+  classes   Class[]
+  courses   Course[]
+
+  @@map("units")
+}
+
+// ==========================================
+// USERS & PERMISSIONS
+// ==========================================
+
+model User {
+  id             String    @id @default(uuid())
+  tenantId       String
+  unitId         String?
+  roleId         String?
+  name           String
+  email          String
+  passwordHash   String
+  isActive       Boolean   @default(true)
+  lastLogin      DateTime?
+  refreshToken   String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  unit      Unit?     @relation(fields: [unitId], references: [id])
+  role      Role?     @relation(fields: [roleId], references: [id])
+  auditLogs AuditLog[]
+
+  @@unique([email, tenantId])
+  @@map("users")
+}
+
+model Role {
+  id          String    @id @default(uuid())
+  tenantId    String
+  name        String
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  permissions Permission[]
+  users       User[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id        String    @id @default(uuid())
+  roleId    String
+  module    String
+  action    String
+  allowed   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  role      Role      @relation(fields: [roleId], references: [id])
+
+  @@map("permissions")
+}
+
+// ==========================================
+// ACADEMIC STRUCTURE
+// ==========================================
+
+model Course {
+  id          String    @id @default(uuid())
+  tenantId    String
+  unitId      String?
+  name        String
+  code        String?
+  description String?
+  duration    Int?
+  modality    String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  unit        Unit?        @relation(fields: [unitId], references: [id])
+  classes     Class[]
+  disciplines Discipline[]
+  enrollments Enrollment[]
+
+  @@map("courses")
+}
+
+model Class {
+  id          String    @id @default(uuid())
+  tenantId    String
+  unitId      String?
+  courseId     String
+  name        String
+  code        String?
+  year        Int
+  semester    Int?
+  shift       String?
+  maxStudents Int?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  unit        Unit?        @relation(fields: [unitId], references: [id])
+  course      Course       @relation(fields: [courseId], references: [id])
+  enrollments Enrollment[]
+  grades      Grade[]
+  attendances Attendance[]
+  diaryEntries DiaryEntry[]
+
+  @@map("classes")
+}
+
+model Discipline {
+  id          String    @id @default(uuid())
+  tenantId    String
+  courseId     String?
+  name        String
+  code        String?
+  workload    Int?
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  course      Course?      @relation(fields: [courseId], references: [id])
+  teachers    TeacherDiscipline[]
+  grades      Grade[]
+  attendances Attendance[]
+  diaryEntries DiaryEntry[]
+
+  @@map("disciplines")
+}
+
+model Teacher {
+  id          String    @id @default(uuid())
+  tenantId    String
+  name        String
+  email       String?
+  phone       String?
+  cpf         String?
+  registration String?
+  specialization String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant             @relation(fields: [tenantId], references: [id])
+  disciplines TeacherDiscipline[]
+
+  @@map("teachers")
+}
+
+model TeacherDiscipline {
+  id           String @id @default(uuid())
+  teacherId    String
+  disciplineId String
+
+  teacher    Teacher    @relation(fields: [teacherId], references: [id])
+  discipline Discipline @relation(fields: [disciplineId], references: [id])
+
+  @@unique([teacherId, disciplineId])
+  @@map("teacher_disciplines")
+}
+
+// ==========================================
+// STUDENTS
+// ==========================================
+
+model Student {
+  id            String    @id @default(uuid())
+  tenantId      String
+  name          String
+  email         String?
+  phone         String?
+  cpf           String?
+  rg            String?
+  birthDate     DateTime?
+  gender        String?
+  address       String?
+  city          String?
+  state         String?
+  zipCode       String?
+  motherName    String?
+  fatherName    String?
+  guardianName  String?
+  guardianPhone String?
+  registration  String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  enrollments Enrollment[]
+  grades      Grade[]
+  attendances Attendance[]
+  internships Internship[]
+  requests    Request[]
+  financialAccounts FinancialAccount[]
+
+  @@map("students")
+}
+
+// ==========================================
+// ENROLLMENTS
+// ==========================================
+
+model Enrollment {
+  id          String    @id @default(uuid())
+  tenantId    String
+  studentId   String
+  courseId     String
+  classId     String?
+  code        String?
+  status      EnrollmentStatus @default(ACTIVE)
+  enrollDate  DateTime  @default(now())
+  startDate   DateTime?
+  endDate     DateTime?
+  observation String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  student     Student   @relation(fields: [studentId], references: [id])
+  course      Course    @relation(fields: [courseId], references: [id])
+  class       Class?    @relation(fields: [classId], references: [id])
+
+  @@map("enrollments")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  RENEWED
+  TRANSFERRED
+  CANCELLED
+  SUSPENDED
+  COMPLETED
+}
+
+// ==========================================
+// GRADES
+// ==========================================
+
+model Grade {
+  id           String    @id @default(uuid())
+  tenantId     String
+  studentId    String
+  classId      String
+  disciplineId String
+  evaluation   String?
+  value        Float?
+  weight       Float?    @default(1.0)
+  recovery     Float?
+  finalGrade   Float?
+  status       String?
+  period       Int?
+  year         Int?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  tenant       Tenant     @relation(fields: [tenantId], references: [id])
+  student      Student    @relation(fields: [studentId], references: [id])
+  class        Class      @relation(fields: [classId], references: [id])
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+
+  @@map("grades")
+}
+
+// ==========================================
+// ATTENDANCE
+// ==========================================
+
+model Attendance {
+  id           String    @id @default(uuid())
+  tenantId     String
+  studentId    String
+  classId      String
+  disciplineId String
+  date         DateTime
+  present      Boolean   @default(true)
+  justified    Boolean   @default(false)
+  observation  String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  tenant       Tenant     @relation(fields: [tenantId], references: [id])
+  student      Student    @relation(fields: [studentId], references: [id])
+  class        Class      @relation(fields: [classId], references: [id])
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+
+  @@map("attendances")
+}
+
+// ==========================================
+// DIARY ENTRIES (DIARIO)
+// ==========================================
+
+model DiaryEntry {
+  id           String    @id @default(uuid())
+  tenantId     String
+  classId      String
+  disciplineId String
+  date         DateTime
+  type         DiaryType
+  content      String?
+  topic        String?
+  observations String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  tenant       Tenant     @relation(fields: [tenantId], references: [id])
+  class        Class      @relation(fields: [classId], references: [id])
+  discipline   Discipline @relation(fields: [disciplineId], references: [id])
+
+  @@map("diary_entries")
+}
+
+enum DiaryType {
+  ATTENDANCE
+  GRADES
+  CONTENT
+}
+
+// ==========================================
+// INTERNSHIPS
+// ==========================================
+
+model Internship {
+  id              String    @id @default(uuid())
+  tenantId        String
+  studentId       String
+  companyId       String?
+  startDate       DateTime?
+  endDate         DateTime?
+  workload        Int?
+  supervisor      String?
+  status          String?   @default("ACTIVE")
+  observation     String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  tenant          Tenant            @relation(fields: [tenantId], references: [id])
+  student         Student           @relation(fields: [studentId], references: [id])
+  company         InternshipCompany? @relation(fields: [companyId], references: [id])
+
+  @@map("internships")
+}
+
+model InternshipCompany {
+  id          String    @id @default(uuid())
+  tenantId    String
+  name        String
+  cnpj        String?
+  address     String?
+  city        String?
+  state       String?
+  phone       String?
+  email       String?
+  contactName String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id])
+  internships Internship[]
+
+  @@map("internship_companies")
+}
+
+// ==========================================
+// REQUESTS (REQUERIMENTOS)
+// ==========================================
+
+model Request {
+  id          String    @id @default(uuid())
+  tenantId    String
+  studentId   String
+  type        String
+  protocol    String?
+  description String?
+  status      RequestStatus @default(PENDING)
+  response    String?
+  requestDate DateTime  @default(now())
+  responseDate DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  student     Student   @relation(fields: [studentId], references: [id])
+
+  @@map("requests")
+}
+
+enum RequestStatus {
+  PENDING
+  IN_PROGRESS
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+// ==========================================
+// MINUTES (ATAS)
+// ==========================================
+
+model Minutes {
+  id          String    @id @default(uuid())
+  tenantId    String
+  title       String
+  date        DateTime
+  type        String?
+  content     String?
+  participants String?
+  status      String?   @default("DRAFT")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+
+  @@map("minutes")
+}
+
+// ==========================================
+// FINANCIAL
+// ==========================================
+
+model FinancialAccount {
+  id          String    @id @default(uuid())
+  tenantId    String
+  studentId   String
+  description String?
+  totalAmount Float
+  dueDate     DateTime?
+  status      String?   @default("OPEN")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant             @relation(fields: [tenantId], references: [id])
+  student     Student            @relation(fields: [studentId], references: [id])
+  payments    FinancialPayment[]
+
+  @@map("financial_accounts")
+}
+
+model FinancialPayment {
+  id          String    @id @default(uuid())
+  tenantId    String
+  accountId   String
+  installment Int
+  amount      Float
+  dueDate     DateTime
+  paidDate    DateTime?
+  paidAmount  Float?
+  status      PaymentStatus @default(PENDING)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenant      Tenant           @relation(fields: [tenantId], references: [id])
+  account     FinancialAccount @relation(fields: [accountId], references: [id])
+
+  @@map("financial_payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+// ==========================================
+// AUDIT LOG
+// ==========================================
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  tenantId   String
+  userId     String?
+  action     String
+  module     String
+  entityId   String?
+  entityType String?
+  oldData    Json?
+  newData    Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
