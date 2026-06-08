@@ -4,7 +4,9 @@
   "description": "SaaS Educational Management System",
   "private": true,
   "scripts": {
-    "build": "tsc --project tsconfig.json",
+    "build": "tsc --project tsconfig.json && npm run build:frontend",
+    "build:backend": "tsc --project tsconfig.json",
+    "build:frontend": "cd src/frontend && npm run build",
     "start": "node dist/backend/server.js",
     "dev": "ts-node src/backend/server.ts",
     "test": "jest --passWithNoTests",

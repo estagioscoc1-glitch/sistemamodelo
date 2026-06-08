@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Next.js React frontend with modern UI framework, authentication flow, main dashboard, sidebar navigation, and complete UI for Cadastros and Matriculas CRUD modules. This implements the modernized visual interface while preserving 100% of the operational logic from the legacy system. Design references: Salesforce, Hubspot, Notion, Monday, Linear, Stripe Dashboard style.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create /projects/sandbox/sistemamodelo/app/src/frontend/ as a Next.js application with App Router, Tailwind CSS, and shadcn/ui component library",
     "Create /projects/sandbox/sistemamodelo/app/src/frontend/app/layout.tsx with root layout including dark/light mode support via next-themes, global styles, and font configuration",
