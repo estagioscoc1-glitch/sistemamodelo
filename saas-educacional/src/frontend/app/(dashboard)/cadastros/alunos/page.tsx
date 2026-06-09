@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -16,14 +17,6 @@ interface Aluno {
   status: string;
   [key: string]: unknown;
 }
-
-const mockAlunos: Aluno[] = [
-  { id: '1', nome: 'Ana Silva Santos', matricula: '2024001', cpf: '123.456.789-00', email: 'ana@email.com', curso: 'Administracao', status: 'Ativo' },
-  { id: '2', nome: 'Joao Pedro Oliveira', matricula: '2024002', cpf: '234.567.890-11', email: 'joao@email.com', curso: 'Sistemas de Informacao', status: 'Ativo' },
-  { id: '3', nome: 'Maria Fernandes Costa', matricula: '2024003', cpf: '345.678.901-22', email: 'maria@email.com', curso: 'Enfermagem', status: 'Ativo' },
-  { id: '4', nome: 'Carlos Eduardo Lima', matricula: '2023015', cpf: '456.789.012-33', email: 'carlos@email.com', curso: 'Direito', status: 'Trancado' },
-  { id: '5', nome: 'Juliana Almeida', matricula: '2023020', cpf: '567.890.123-44', email: 'juliana@email.com', curso: 'Pedagogia', status: 'Ativo' },
-];
 
 const columns: Column<Aluno>[] = [
   { key: 'matricula', header: 'Matricula', sortable: true },
@@ -42,6 +35,13 @@ const columns: Column<Aluno>[] = [
 ];
 
 export default function AlunosPage() {
+  const { data, isLoading, error, execute } = useApi<Aluno[]>('/cadastros/alunos');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -60,7 +60,7 @@ export default function AlunosPage() {
       />
 
       <DataTable
-        data={mockAlunos}
+        data={data || []}
         columns={columns}
         searchKey="nome"
         searchPlaceholder="Buscar alunos..."

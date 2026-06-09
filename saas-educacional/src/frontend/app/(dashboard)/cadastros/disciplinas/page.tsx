@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -16,16 +17,6 @@ interface Disciplina {
   status: string;
   [key: string]: unknown;
 }
-
-const mockDisciplinas: Disciplina[] = [
-  { id: '1', nome: 'Matematica I', codigo: 'MAT101', cargaHoraria: '80h', curso: 'Administracao', periodo: '1o Periodo', status: 'Ativa' },
-  { id: '2', nome: 'Portugues I', codigo: 'POR101', cargaHoraria: '60h', curso: 'Administracao', periodo: '1o Periodo', status: 'Ativa' },
-  { id: '3', nome: 'Administracao I', codigo: 'ADM101', cargaHoraria: '60h', curso: 'Administracao', periodo: '1o Periodo', status: 'Ativa' },
-  { id: '4', nome: 'Anatomia I', codigo: 'ANA101', cargaHoraria: '100h', curso: 'Enfermagem', periodo: '1o Periodo', status: 'Ativa' },
-  { id: '5', nome: 'Algoritmos', codigo: 'ALG101', cargaHoraria: '80h', curso: 'Sistemas de Informacao', periodo: '1o Periodo', status: 'Ativa' },
-  { id: '6', nome: 'Direito Civil I', codigo: 'DCI101', cargaHoraria: '60h', curso: 'Direito', periodo: '1o Periodo', status: 'Ativa' },
-  { id: '7', nome: 'Psicologia da Educacao', codigo: 'PSI101', cargaHoraria: '60h', curso: 'Pedagogia', periodo: '2o Periodo', status: 'Inativa' },
-];
 
 const columns: Column<Disciplina>[] = [
   { key: 'codigo', header: 'Codigo', sortable: true },
@@ -43,6 +34,13 @@ const columns: Column<Disciplina>[] = [
 ];
 
 export default function DisciplinasPage() {
+  const { data, isLoading, error, execute } = useApi<Disciplina[]>('/cadastros/disciplinas');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -61,7 +59,7 @@ export default function DisciplinasPage() {
       />
 
       <DataTable
-        data={mockDisciplinas}
+        data={data || []}
         columns={columns}
         searchKey="nome"
         searchPlaceholder="Buscar disciplinas..."

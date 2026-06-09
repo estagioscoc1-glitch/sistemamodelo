@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
 import { DataTable, type Column } from '@/components/shared/DataTable';
 
 interface Baixa {
@@ -17,15 +17,6 @@ interface Baixa {
   [key: string]: unknown;
 }
 
-const mockBaixas: Baixa[] = [
-  { id: '1', aluno: 'Ana Silva Santos', parcela: '1/12 - Jan/2024', valor: 'R$ 1.200,00', dataPagamento: '10/01/2024', formaPagamento: 'Boleto', usuario: 'admin' },
-  { id: '2', aluno: 'Ana Silva Santos', parcela: '2/12 - Fev/2024', valor: 'R$ 1.200,00', dataPagamento: '10/02/2024', formaPagamento: 'PIX', usuario: 'admin' },
-  { id: '3', aluno: 'Ana Silva Santos', parcela: '3/12 - Mar/2024', valor: 'R$ 1.200,00', dataPagamento: '08/03/2024', formaPagamento: 'Cartao', usuario: 'admin' },
-  { id: '4', aluno: 'Joao Pedro Oliveira', parcela: '1/12 - Jan/2024', valor: 'R$ 980,00', dataPagamento: '12/01/2024', formaPagamento: 'Boleto', usuario: 'financeiro1' },
-  { id: '5', aluno: 'Carlos Eduardo Lima', parcela: '1/12 - Jan/2024', valor: 'R$ 1.500,00', dataPagamento: '10/01/2024', formaPagamento: 'PIX', usuario: 'financeiro1' },
-  { id: '6', aluno: 'Maria Fernandes Costa', parcela: '1/12 - Jan/2024', valor: 'R$ 1.100,00', dataPagamento: '09/01/2024', formaPagamento: 'Boleto', usuario: 'admin' },
-];
-
 const columns: Column<Baixa>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
   { key: 'parcela', header: 'Parcela' },
@@ -36,6 +27,13 @@ const columns: Column<Baixa>[] = [
 ];
 
 export default function BaixasPage() {
+  const { data, isLoading, error, execute } = useApi<Baixa[]>('/financeiro/baixas');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -54,7 +52,7 @@ export default function BaixasPage() {
       />
 
       <DataTable
-        data={mockBaixas}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

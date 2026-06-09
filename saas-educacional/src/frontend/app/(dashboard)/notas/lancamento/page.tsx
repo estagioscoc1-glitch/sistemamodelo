@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -15,22 +16,22 @@ interface StudentGrade {
   recuperacao: string;
 }
 
-const mockStudents: StudentGrade[] = [
-  { id: '1', nome: 'Ana Silva Santos', nota: '', recuperacao: '' },
-  { id: '2', nome: 'Joao Pedro Oliveira', nota: '', recuperacao: '' },
-  { id: '3', nome: 'Maria Fernandes Costa', nota: '', recuperacao: '' },
-  { id: '4', nome: 'Carlos Eduardo Lima', nota: '', recuperacao: '' },
-  { id: '5', nome: 'Juliana Almeida', nota: '', recuperacao: '' },
-  { id: '6', nome: 'Pedro Santos', nota: '', recuperacao: '' },
-];
-
 export default function LancamentoNotasPage() {
   const { addToast } = useToast();
+  const { data, isLoading, error, execute } = useApi<StudentGrade[]>('/notas/lancamento');
   const [turma, setTurma] = useState('');
   const [disciplina, setDisciplina] = useState('');
   const [periodo, setPeriodo] = useState('');
-  const [students, setStudents] = useState<StudentGrade[]>(mockStudents);
+  const [students, setStudents] = useState<StudentGrade[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => { execute(); }, [execute]);
+
+  useEffect(() => {
+    if (data) {
+      setStudents(data);
+    }
+  }, [data]);
 
   const updateGrade = (index: number, field: 'nota' | 'recuperacao', value: string) => {
     setStudents((prev) => {
@@ -54,6 +55,9 @@ export default function LancamentoNotasPage() {
     if (!validate()) return;
     addToast({ title: 'Notas lancadas com sucesso!', variant: 'success' });
   };
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
 
   return (
     <div>

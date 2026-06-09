@@ -1,11 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+
+interface FluxoData {
+  totalEntradas: string;
+  totalSaidas: string;
+  saldo: string;
+  meses: FluxoMes[];
+}
 
 interface FluxoMes {
   mes: string;
@@ -15,17 +23,16 @@ interface FluxoMes {
   tipo: 'positivo' | 'negativo';
 }
 
-const mockFluxo: FluxoMes[] = [
-  { mes: 'Janeiro/2024', entradas: 'R$ 89.400,00', saidas: 'R$ 45.200,00', saldo: 'R$ 44.200,00', tipo: 'positivo' },
-  { mes: 'Fevereiro/2024', entradas: 'R$ 82.100,00', saidas: 'R$ 48.500,00', saldo: 'R$ 33.600,00', tipo: 'positivo' },
-  { mes: 'Marco/2024', entradas: 'R$ 91.200,00', saidas: 'R$ 52.300,00', saldo: 'R$ 38.900,00', tipo: 'positivo' },
-  { mes: 'Abril/2024', entradas: 'R$ 75.800,00', saidas: 'R$ 49.100,00', saldo: 'R$ 26.700,00', tipo: 'positivo' },
-  { mes: 'Maio/2024', entradas: 'R$ 68.500,00', saidas: 'R$ 71.200,00', saldo: '-R$ 2.700,00', tipo: 'negativo' },
-  { mes: 'Junho/2024', entradas: 'R$ 45.200,00', saidas: 'R$ 42.800,00', saldo: 'R$ 2.400,00', tipo: 'positivo' },
-];
-
 export default function FluxoCaixaPage() {
+  const { data, isLoading, error, execute } = useApi<FluxoData>('/financeiro/fluxo');
   const [periodo, setPeriodo] = useState('');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
+  const meses = data?.meses || [];
 
   return (
     <div>
@@ -71,7 +78,7 @@ export default function FluxoCaixaPage() {
             <CardTitle className="text-sm">Total Entradas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-green-600">R$ 452.200,00</p>
+            <p className="text-2xl font-bold text-green-600">{data?.totalEntradas || 'R$ 0,00'}</p>
           </CardContent>
         </Card>
         <Card>
@@ -79,7 +86,7 @@ export default function FluxoCaixaPage() {
             <CardTitle className="text-sm">Total Saidas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-red-600">R$ 309.100,00</p>
+            <p className="text-2xl font-bold text-red-600">{data?.totalSaidas || 'R$ 0,00'}</p>
           </CardContent>
         </Card>
         <Card>
@@ -87,7 +94,7 @@ export default function FluxoCaixaPage() {
             <CardTitle className="text-sm">Saldo</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">R$ 143.100,00</p>
+            <p className="text-2xl font-bold">{data?.saldo || 'R$ 0,00'}</p>
           </CardContent>
         </Card>
       </div>
@@ -108,7 +115,7 @@ export default function FluxoCaixaPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockFluxo.map((item) => (
+                {meses.map((item) => (
                   <tr key={item.mes} className="border-b">
                     <td className="py-3 px-2 font-medium">{item.mes}</td>
                     <td className="text-right py-3 px-2 text-green-600">{item.entradas}</td>

@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -24,16 +25,6 @@ const tipoVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destruc
   Desistencia: 'destructive',
   Retorno: 'success',
 };
-
-const mockMovimentacoes: Movimentacao[] = [
-  { id: '1', aluno: 'Ana Silva Santos', tipo: 'Transferencia', origem: 'ADM-2024-1A', destino: 'ADM-2024-1B', data: '15/03/2024', status: 'Concluida' },
-  { id: '2', aluno: 'Joao Pedro Oliveira', tipo: 'Trancamento', origem: 'SI-2024-1A', destino: '-', data: '20/02/2024', status: 'Concluida' },
-  { id: '3', aluno: 'Maria Fernandes Costa', tipo: 'Reopcao', origem: 'Enfermagem', destino: 'Administracao', data: '10/01/2024', status: 'Em Analise' },
-  { id: '4', aluno: 'Carlos Eduardo Lima', tipo: 'Desistencia', origem: 'DIR-2023-2A', destino: '-', data: '05/04/2024', status: 'Concluida' },
-  { id: '5', aluno: 'Juliana Almeida', tipo: 'Retorno', origem: '-', destino: 'PED-2024-1A', data: '01/02/2024', status: 'Concluida' },
-  { id: '6', aluno: 'Pedro Santos', tipo: 'Transferencia', origem: 'ADM-2024-1A', destino: 'ADM-2024-2A', data: '25/03/2024', status: 'Em Analise' },
-  { id: '7', aluno: 'Lucas Mendes', tipo: 'Trancamento', origem: 'ENF-2024-1A', destino: '-', data: '12/04/2024', status: 'Pendente' },
-];
 
 const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destructive' | 'default'> = {
   Concluida: 'success',
@@ -60,6 +51,13 @@ const columns: Column<Movimentacao>[] = [
 ];
 
 export default function MovimentacaoPage() {
+  const { data, isLoading, error, execute } = useApi<Movimentacao[]>('/movimentacao');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -75,11 +73,11 @@ export default function MovimentacaoPage() {
       />
 
       <DataTable
-        data={mockMovimentacoes}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."
-        actions={(item) => (
+        actions={() => (
           <Button variant="ghost" size="sm">Detalhes</Button>
         )}
       />

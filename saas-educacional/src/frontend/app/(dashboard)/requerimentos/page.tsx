@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -25,16 +26,6 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Concluido: 'secondary',
 };
 
-const mockRequerimentos: Requerimento[] = [
-  { id: '1', protocolo: 'REQ-2024-00001', aluno: 'Ana Silva Santos', tipo: 'Segunda Via', descricao: 'Solicita segunda via do diploma', dataRequerimento: '10/03/2024', status: 'Pendente' },
-  { id: '2', protocolo: 'REQ-2024-00002', aluno: 'Joao Pedro Oliveira', tipo: 'Trancamento', descricao: 'Solicita trancamento por motivos pessoais', dataRequerimento: '12/03/2024', status: 'Em Andamento' },
-  { id: '3', protocolo: 'REQ-2024-00003', aluno: 'Maria Fernandes Costa', tipo: 'Aproveitamento', descricao: 'Aproveitamento de disciplina cursada em outra instituicao', dataRequerimento: '15/03/2024', status: 'Aprovado' },
-  { id: '4', protocolo: 'REQ-2024-00004', aluno: 'Carlos Eduardo Lima', tipo: 'Revisao de Nota', descricao: 'Revisao de nota da disciplina de Calculo I', dataRequerimento: '18/03/2024', status: 'Rejeitado' },
-  { id: '5', protocolo: 'REQ-2024-00005', aluno: 'Juliana Almeida', tipo: 'Declaracao', descricao: 'Declaracao de matricula para fins trabalhistas', dataRequerimento: '20/03/2024', status: 'Concluido' },
-  { id: '6', protocolo: 'REQ-2024-00006', aluno: 'Pedro Santos', tipo: 'Outros', descricao: 'Solicitacao de mudanca de turno', dataRequerimento: '22/03/2024', status: 'Pendente' },
-  { id: '7', protocolo: 'REQ-2024-00007', aluno: 'Fernanda Lima', tipo: 'Segunda Via', descricao: 'Segunda via do historico escolar', dataRequerimento: '25/03/2024', status: 'Em Andamento' },
-];
-
 const columns: Column<Requerimento>[] = [
   { key: 'protocolo', header: 'Protocolo', sortable: true },
   { key: 'aluno', header: 'Aluno', sortable: true },
@@ -51,6 +42,13 @@ const columns: Column<Requerimento>[] = [
 ];
 
 export default function RequerimentosPage() {
+  const { data, isLoading, error, execute } = useApi<Requerimento[]>('/requerimentos');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -68,7 +66,7 @@ export default function RequerimentosPage() {
       />
 
       <DataTable
-        data={mockRequerimentos}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

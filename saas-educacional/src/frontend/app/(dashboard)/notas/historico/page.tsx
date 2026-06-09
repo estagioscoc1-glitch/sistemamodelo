@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { Select } from '@/components/ui/Select';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { DataTable, type Column } from '@/components/shared/DataTable';
@@ -28,20 +28,11 @@ const resultadoVariant: Record<string, 'success' | 'secondary' | 'warning' | 'de
   Cursando: 'secondary',
 };
 
-const mockHistorico: HistoricoNota[] = [
-  { id: '1', aluno: 'Ana Silva Santos', disciplina: 'Matematica I', turma: 'ADM-2023-1A', periodo: '2023.1', nota: 8.5, resultado: 'Aprovado', ano: '2023' },
-  { id: '2', aluno: 'Ana Silva Santos', disciplina: 'Portugues I', turma: 'ADM-2023-1A', periodo: '2023.1', nota: 7.0, resultado: 'Aprovado', ano: '2023' },
-  { id: '3', aluno: 'Ana Silva Santos', disciplina: 'Matematica II', turma: 'ADM-2023-2A', periodo: '2023.2', nota: 6.5, resultado: 'Aprovado', ano: '2023' },
-  { id: '4', aluno: 'Ana Silva Santos', disciplina: 'Administracao I', turma: 'ADM-2024-1A', periodo: '2024.1', nota: 9.0, resultado: 'Aprovado', ano: '2024' },
-  { id: '5', aluno: 'Ana Silva Santos', disciplina: 'Economia', turma: 'ADM-2024-1A', periodo: '2024.1', nota: 4.5, resultado: 'Reprovado', ano: '2024' },
-  { id: '6', aluno: 'Ana Silva Santos', disciplina: 'Estatistica', turma: 'ADM-2024-1A', periodo: '2024.1', nota: 5.5, resultado: 'Recuperacao', ano: '2024' },
-];
-
 const columns: Column<HistoricoNota>[] = [
   { key: 'disciplina', header: 'Disciplina', sortable: true },
   { key: 'turma', header: 'Turma' },
   { key: 'periodo', header: 'Periodo', sortable: true },
-  { key: 'nota', header: 'Nota', render: (item) => <span>{item.nota.toFixed(1)}</span> },
+  { key: 'nota', header: 'Nota', render: (item) => <span>{item.nota?.toFixed(1)}</span> },
   {
     key: 'resultado',
     header: 'Resultado',
@@ -52,7 +43,13 @@ const columns: Column<HistoricoNota>[] = [
 ];
 
 export default function HistoricoNotasPage() {
+  const { data, isLoading, error, execute } = useApi<HistoricoNota[]>('/notas/historico');
   const [aluno, setAluno] = useState('');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
 
   return (
     <div>
@@ -87,7 +84,7 @@ export default function HistoricoNotasPage() {
       </Card>
 
       <DataTable
-        data={mockHistorico}
+        data={data || []}
         columns={columns}
         searchKey="disciplina"
         searchPlaceholder="Buscar por disciplina..."

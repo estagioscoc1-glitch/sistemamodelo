@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -25,15 +26,6 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Concluido: 'secondary',
 };
 
-const mockControle: ControleEstagio[] = [
-  { id: '1', aluno: 'Ana Silva Santos', empresa: 'TechCorp Ltda', supervisor: 'Carlos Mendes', horasRealizadas: 320, horasTotal: 400, percentual: 80, status: 'Em dia' },
-  { id: '2', aluno: 'Joao Pedro Oliveira', empresa: 'Construtora ABC', supervisor: 'Maria Souza', horasRealizadas: 150, horasTotal: 400, percentual: 37, status: 'Atrasado' },
-  { id: '3', aluno: 'Maria Fernandes Costa', empresa: 'Hospital Vida', supervisor: 'Dr. Paulo', horasRealizadas: 400, horasTotal: 400, percentual: 100, status: 'Concluido' },
-  { id: '4', aluno: 'Carlos Eduardo Lima', empresa: 'Escritorio Juridico Silva', supervisor: 'Ana Costa', horasRealizadas: 50, horasTotal: 300, percentual: 17, status: 'Irregular' },
-  { id: '5', aluno: 'Juliana Almeida', empresa: 'Escola Municipal Norte', supervisor: 'Prof. Santos', horasRealizadas: 280, horasTotal: 300, percentual: 93, status: 'Em dia' },
-  { id: '6', aluno: 'Pedro Santos', empresa: 'TechCorp Ltda', supervisor: 'Carlos Mendes', horasRealizadas: 200, horasTotal: 400, percentual: 50, status: 'Em dia' },
-];
-
 const columns: Column<ControleEstagio>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
   { key: 'empresa', header: 'Empresa', sortable: true },
@@ -51,6 +43,13 @@ const columns: Column<ControleEstagio>[] = [
 ];
 
 export default function ControleEstagioPage() {
+  const { data, isLoading, error, execute } = useApi<ControleEstagio[]>('/estagios/controle');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -64,7 +63,7 @@ export default function ControleEstagioPage() {
       />
 
       <DataTable
-        data={mockControle}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

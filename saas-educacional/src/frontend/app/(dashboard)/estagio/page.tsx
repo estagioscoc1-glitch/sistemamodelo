@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -24,15 +25,6 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Suspenso: 'warning',
 };
 
-const mockEstagios: Estagio[] = [
-  { id: '1', aluno: 'Ana Silva Santos', empresa: 'TechCorp Ltda', dataInicio: '01/03/2024', dataFim: '01/09/2024', cargaHoraria: '30h/sem', status: 'Ativo' },
-  { id: '2', aluno: 'Joao Pedro Oliveira', empresa: 'Construtora ABC', dataInicio: '15/02/2024', dataFim: '15/08/2024', cargaHoraria: '20h/sem', status: 'Ativo' },
-  { id: '3', aluno: 'Maria Fernandes Costa', empresa: 'Hospital Vida', dataInicio: '01/01/2024', dataFim: '01/07/2024', cargaHoraria: '30h/sem', status: 'Concluido' },
-  { id: '4', aluno: 'Carlos Eduardo Lima', empresa: 'Escritorio Juridico Silva', dataInicio: '10/04/2024', dataFim: '10/10/2024', cargaHoraria: '25h/sem', status: 'Ativo' },
-  { id: '5', aluno: 'Juliana Almeida', empresa: 'Escola Municipal Norte', dataInicio: '01/02/2024', dataFim: '01/06/2024', cargaHoraria: '20h/sem', status: 'Cancelado' },
-  { id: '6', aluno: 'Pedro Santos', empresa: 'TechCorp Ltda', dataInicio: '01/05/2024', dataFim: '01/11/2024', cargaHoraria: '30h/sem', status: 'Ativo' },
-];
-
 const columns: Column<Estagio>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
   { key: 'empresa', header: 'Empresa', sortable: true },
@@ -49,6 +41,13 @@ const columns: Column<Estagio>[] = [
 ];
 
 export default function EstagioPage() {
+  const { data, isLoading, error, execute } = useApi<Estagio[]>('/estagios');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -66,7 +65,7 @@ export default function EstagioPage() {
       />
 
       <DataTable
-        data={mockEstagios}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

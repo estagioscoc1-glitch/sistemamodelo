@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -23,15 +24,6 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Atrasada: 'destructive',
 };
 
-const mockContas: Conta[] = [
-  { id: '1', aluno: 'Ana Silva Santos', descricao: 'Mensalidade 2024/1', valorTotal: 'R$ 1.200,00', vencimento: '10/03/2024', status: 'Paga' },
-  { id: '2', aluno: 'Joao Pedro Oliveira', descricao: 'Mensalidade 2024/1', valorTotal: 'R$ 1.500,00', vencimento: '10/03/2024', status: 'Aberta' },
-  { id: '3', aluno: 'Maria Fernandes Costa', descricao: 'Mensalidade 2024/1', valorTotal: 'R$ 1.200,00', vencimento: '10/02/2024', status: 'Atrasada' },
-  { id: '4', aluno: 'Carlos Eduardo Lima', descricao: 'Rematricula 2024', valorTotal: 'R$ 800,00', vencimento: '05/01/2024', status: 'Paga' },
-  { id: '5', aluno: 'Juliana Almeida', descricao: 'Mensalidade 2024/1', valorTotal: 'R$ 1.350,00', vencimento: '10/03/2024', status: 'Parcial' },
-  { id: '6', aluno: 'Pedro Santos', descricao: 'Mensalidade 2024/1', valorTotal: 'R$ 1.200,00', vencimento: '10/03/2024', status: 'Aberta' },
-];
-
 const columns: Column<Conta>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
   { key: 'descricao', header: 'Descricao' },
@@ -47,6 +39,13 @@ const columns: Column<Conta>[] = [
 ];
 
 export default function ContasReceberPage() {
+  const { data, isLoading, error, execute } = useApi<Conta[]>('/financeiro/contas-receber');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -65,7 +64,7 @@ export default function ContasReceberPage() {
       />
 
       <DataTable
-        data={mockContas}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

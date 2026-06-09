@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -15,22 +16,14 @@ interface ResultadoPesquisa {
   descricao: string;
 }
 
-const mockResultados: ResultadoPesquisa[] = [
-  { id: '1', tipo: 'Aluno', titulo: 'Ana Silva Santos', descricao: 'Matricula: 2024001 - Curso: Administracao' },
-  { id: '2', tipo: 'Aluno', titulo: 'Ana Maria Costa', descricao: 'Matricula: 2024015 - Curso: Enfermagem' },
-  { id: '3', tipo: 'Curso', titulo: 'Administracao', descricao: 'Codigo: ADM001 - 4 anos - Presencial' },
-  { id: '4', tipo: 'Disciplina', titulo: 'Administracao Financeira', descricao: 'ADM - 60h - 4o Periodo' },
-  { id: '5', tipo: 'Professor', titulo: 'Ana Paula Santos', descricao: 'Departamento: Administracao - Matematica' },
-];
-
 export default function PesquisaPage() {
   const [termo, setTermo] = useState('');
   const [tipo, setTipo] = useState('');
-  const [resultados, setResultados] = useState<ResultadoPesquisa[]>([]);
+  const { data, isLoading, execute } = useApi<ResultadoPesquisa[]>('/pesquisa');
   const [buscou, setBuscou] = useState(false);
 
   const handleBuscar = () => {
-    setResultados(mockResultados);
+    execute();
     setBuscou(true);
   };
 
@@ -83,23 +76,27 @@ export default function PesquisaPage() {
       {buscou && (
         <Card>
           <CardHeader>
-            <CardTitle>Resultados ({resultados.length})</CardTitle>
+            <CardTitle>Resultados ({isLoading ? '...' : (data || []).length})</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {resultados.map((item) => (
-                <div key={item.id} className="flex items-center justify-between p-3 rounded-md border hover:bg-muted">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{item.tipo}</Badge>
-                      <span className="font-medium">{item.titulo}</span>
+            {isLoading ? (
+              <p className="text-center py-4">Carregando...</p>
+            ) : (
+              <div className="space-y-3">
+                {(data || []).map((item) => (
+                  <div key={item.id} className="flex items-center justify-between p-3 rounded-md border hover:bg-muted">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="secondary">{item.tipo}</Badge>
+                        <span className="font-medium">{item.titulo}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">{item.descricao}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">{item.descricao}</p>
+                    <Button variant="ghost" size="sm">Ver</Button>
                   </div>
-                  <Button variant="ghost" size="sm">Ver</Button>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

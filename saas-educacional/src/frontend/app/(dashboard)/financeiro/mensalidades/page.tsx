@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -24,15 +25,6 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Cancelada: 'secondary',
 };
 
-const mockParcelas: Parcela[] = [
-  { id: '1', aluno: 'Ana Silva Santos', parcela: '1/6', valor: 'R$ 200,00', vencimento: '10/01/2024', pagamento: '09/01/2024', status: 'Paga' },
-  { id: '2', aluno: 'Ana Silva Santos', parcela: '2/6', valor: 'R$ 200,00', vencimento: '10/02/2024', pagamento: '10/02/2024', status: 'Paga' },
-  { id: '3', aluno: 'Ana Silva Santos', parcela: '3/6', valor: 'R$ 200,00', vencimento: '10/03/2024', pagamento: '-', status: 'Pendente' },
-  { id: '4', aluno: 'Joao Pedro Oliveira', parcela: '1/12', valor: 'R$ 125,00', vencimento: '10/01/2024', pagamento: '12/01/2024', status: 'Paga' },
-  { id: '5', aluno: 'Joao Pedro Oliveira', parcela: '2/12', valor: 'R$ 125,00', vencimento: '10/02/2024', pagamento: '-', status: 'Atrasada' },
-  { id: '6', aluno: 'Maria Fernandes Costa', parcela: '1/6', valor: 'R$ 200,00', vencimento: '10/01/2024', pagamento: '-', status: 'Atrasada' },
-];
-
 const columns: Column<Parcela>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
   { key: 'parcela', header: 'Parcela' },
@@ -49,6 +41,13 @@ const columns: Column<Parcela>[] = [
 ];
 
 export default function MensalidadesPage() {
+  const { data, isLoading, error, execute } = useApi<Parcela[]>('/financeiro/mensalidades');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -67,7 +66,7 @@ export default function MensalidadesPage() {
       />
 
       <DataTable
-        data={mockParcelas}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

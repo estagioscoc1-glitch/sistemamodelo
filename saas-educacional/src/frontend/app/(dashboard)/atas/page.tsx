@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -22,15 +23,6 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Publicada: 'default',
 };
 
-const mockAtas: Ata[] = [
-  { id: '1', titulo: 'Reuniao do Conselho Academico - Marco 2024', data: '05/03/2024', tipo: 'Reuniao de Conselho', participantes: 'Prof. Silva, Prof. Costa, Coord. Lima', status: 'Publicada' },
-  { id: '2', titulo: 'Assembleia Geral de Professores', data: '10/03/2024', tipo: 'Assembleia', participantes: 'Todos os docentes', status: 'Aprovada' },
-  { id: '3', titulo: 'Colegiado do Curso de Administracao', data: '15/03/2024', tipo: 'Colegiado', participantes: 'Coord. Santos, Prof. Almeida, Rep. Estudantes', status: 'Rascunho' },
-  { id: '4', titulo: 'Reuniao do Conselho Academico - Abril 2024', data: '02/04/2024', tipo: 'Reuniao de Conselho', participantes: 'Prof. Silva, Prof. Costa, Coord. Lima', status: 'Rascunho' },
-  { id: '5', titulo: 'Colegiado do Curso de Enfermagem', data: '08/04/2024', tipo: 'Colegiado', participantes: 'Coord. Fernandes, Prof. Souza, Rep. Estudantes', status: 'Aprovada' },
-  { id: '6', titulo: 'Reuniao Extraordinaria - Calendario 2024.2', data: '12/04/2024', tipo: 'Outros', participantes: 'Diretoria, Coordenadores', status: 'Publicada' },
-];
-
 const columns: Column<Ata>[] = [
   { key: 'titulo', header: 'Titulo', sortable: true },
   { key: 'data', header: 'Data', sortable: true },
@@ -46,6 +38,13 @@ const columns: Column<Ata>[] = [
 ];
 
 export default function AtasPage() {
+  const { data, isLoading, error, execute } = useApi<Ata[]>('/atas');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -63,7 +62,7 @@ export default function AtasPage() {
       />
 
       <DataTable
-        data={mockAtas}
+        data={data || []}
         columns={columns}
         searchKey="titulo"
         searchPlaceholder="Buscar atas..."

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -18,15 +19,6 @@ interface BoletimItem {
   resultado: string;
 }
 
-const mockBoletim: BoletimItem[] = [
-  { disciplina: 'Matematica', b1: 8.5, b2: 7.0, b3: 8.0, b4: 9.0, media: 8.1, resultado: 'Aprovado' },
-  { disciplina: 'Portugues', b1: 7.0, b2: 6.5, b3: 7.5, b4: 8.0, media: 7.3, resultado: 'Aprovado' },
-  { disciplina: 'Historia', b1: 9.0, b2: 8.5, b3: 9.0, b4: 8.0, media: 8.6, resultado: 'Aprovado' },
-  { disciplina: 'Fisica', b1: 5.0, b2: 4.5, b3: 6.0, b4: 5.5, media: 5.3, resultado: 'Recuperacao' },
-  { disciplina: 'Quimica', b1: 7.5, b2: 7.0, b3: 6.5, b4: 7.0, media: 7.0, resultado: 'Aprovado' },
-  { disciplina: 'Biologia', b1: 8.0, b2: 8.5, b3: 9.0, b4: 8.5, media: 8.5, resultado: 'Aprovado' },
-];
-
 const resultadoVariant: Record<string, 'success' | 'warning' | 'destructive' | 'default'> = {
   Aprovado: 'success',
   Recuperacao: 'warning',
@@ -34,8 +26,14 @@ const resultadoVariant: Record<string, 'success' | 'warning' | 'destructive' | '
 };
 
 export default function BoletinsPage() {
+  const { data, isLoading, error, execute } = useApi<BoletimItem[]>('/notas/boletins');
   const [aluno, setAluno] = useState('');
   const [periodo, setPeriodo] = useState('');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
 
   return (
     <div>
@@ -87,7 +85,7 @@ export default function BoletinsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Boletim - Ana Silva Santos - 2024.1</CardTitle>
+          <CardTitle>Boletim</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -104,14 +102,14 @@ export default function BoletinsPage() {
                 </tr>
               </thead>
               <tbody>
-                {mockBoletim.map((item) => (
+                {(data || []).map((item) => (
                   <tr key={item.disciplina} className="border-b">
                     <td className="py-3 px-2 font-medium">{item.disciplina}</td>
-                    <td className="text-center py-3 px-2">{item.b1.toFixed(1)}</td>
-                    <td className="text-center py-3 px-2">{item.b2.toFixed(1)}</td>
-                    <td className="text-center py-3 px-2">{item.b3.toFixed(1)}</td>
-                    <td className="text-center py-3 px-2">{item.b4.toFixed(1)}</td>
-                    <td className="text-center py-3 px-2 font-bold">{item.media.toFixed(1)}</td>
+                    <td className="text-center py-3 px-2">{item.b1?.toFixed(1)}</td>
+                    <td className="text-center py-3 px-2">{item.b2?.toFixed(1)}</td>
+                    <td className="text-center py-3 px-2">{item.b3?.toFixed(1)}</td>
+                    <td className="text-center py-3 px-2">{item.b4?.toFixed(1)}</td>
+                    <td className="text-center py-3 px-2 font-bold">{item.media?.toFixed(1)}</td>
                     <td className="text-center py-3 px-2">
                       <Badge variant={resultadoVariant[item.resultado] || 'default'}>{item.resultado}</Badge>
                     </td>

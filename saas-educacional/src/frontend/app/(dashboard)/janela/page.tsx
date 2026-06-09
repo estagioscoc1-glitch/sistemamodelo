@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -15,14 +16,6 @@ interface Sessao {
   status: string;
 }
 
-const mockSessoes: Sessao[] = [
-  { id: '1', titulo: 'Cadastro de Alunos', modulo: 'Cadastros', horario: '14:32', status: 'Ativa' },
-  { id: '2', titulo: 'Lancamento de Notas', modulo: 'Notas', horario: '14:15', status: 'Ativa' },
-  { id: '3', titulo: 'Financeiro - Parcelas', modulo: 'Financeiro', horario: '13:45', status: 'Ativa' },
-  { id: '4', titulo: 'Relatorio de Frequencia', modulo: 'Diario', horario: '12:30', status: 'Em Segundo Plano' },
-  { id: '5', titulo: 'Controle de Estagio', modulo: 'Estagio', horario: '11:20', status: 'Em Segundo Plano' },
-];
-
 const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destructive' | 'default'> = {
   Ativa: 'success',
   'Em Segundo Plano': 'secondary',
@@ -30,7 +23,16 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
 
 export default function JanelaPage() {
   const { addToast } = useToast();
-  const [sessoes, setSessoes] = useState(mockSessoes);
+  const { data, isLoading, error, execute } = useApi<Sessao[]>('/janelas');
+  const [sessoes, setSessoes] = useState<Sessao[]>([]);
+
+  useEffect(() => { execute(); }, [execute]);
+
+  useEffect(() => {
+    if (data) {
+      setSessoes(data);
+    }
+  }, [data]);
 
   const handleFechar = (id: string) => {
     setSessoes(sessoes.filter((s) => s.id !== id));
@@ -41,6 +43,9 @@ export default function JanelaPage() {
     setSessoes([]);
     addToast({ title: 'Todas as sessoes foram encerradas!', variant: 'success' });
   };
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
 
   return (
     <div>

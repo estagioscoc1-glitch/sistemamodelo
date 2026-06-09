@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -16,22 +17,22 @@ interface StudentAttendance {
   observacao: string;
 }
 
-const mockStudents: StudentAttendance[] = [
-  { id: '1', nome: 'Ana Silva Santos', presente: true, justificado: false, observacao: '' },
-  { id: '2', nome: 'Joao Pedro Oliveira', presente: true, justificado: false, observacao: '' },
-  { id: '3', nome: 'Maria Fernandes Costa', presente: false, justificado: true, observacao: 'Atestado medico' },
-  { id: '4', nome: 'Carlos Eduardo Lima', presente: true, justificado: false, observacao: '' },
-  { id: '5', nome: 'Juliana Almeida', presente: false, justificado: false, observacao: '' },
-  { id: '6', nome: 'Pedro Santos', presente: true, justificado: false, observacao: '' },
-];
-
 export default function ChamadasPage() {
   const { addToast } = useToast();
+  const { data, isLoading, error, execute } = useApi<StudentAttendance[]>('/diario');
   const [turma, setTurma] = useState('');
   const [disciplina, setDisciplina] = useState('');
-  const [data, setData] = useState('');
-  const [students, setStudents] = useState<StudentAttendance[]>(mockStudents);
+  const [dataChamada, setDataChamada] = useState('');
+  const [students, setStudents] = useState<StudentAttendance[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => { execute(); }, [execute]);
+
+  useEffect(() => {
+    if (data) {
+      setStudents(data);
+    }
+  }, [data]);
 
   const togglePresente = (index: number) => {
     setStudents((prev) => {
@@ -61,7 +62,7 @@ export default function ChamadasPage() {
     const newErrors: Record<string, string> = {};
     if (!turma) newErrors.turma = 'Turma e obrigatoria';
     if (!disciplina) newErrors.disciplina = 'Disciplina e obrigatoria';
-    if (!data) newErrors.data = 'Data e obrigatoria';
+    if (!dataChamada) newErrors.data = 'Data e obrigatoria';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -71,6 +72,9 @@ export default function ChamadasPage() {
     if (!validate()) return;
     addToast({ title: 'Chamada registrada com sucesso!', variant: 'success' });
   };
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
 
   return (
     <div>
@@ -123,8 +127,8 @@ export default function ChamadasPage() {
                 id="data"
                 label="Data"
                 type="date"
-                value={data}
-                onChange={(e) => { setData(e.target.value); if (errors.data) setErrors((prev) => ({ ...prev, data: '' })); }}
+                value={dataChamada}
+                onChange={(e) => { setDataChamada(e.target.value); if (errors.data) setErrors((prev) => ({ ...prev, data: '' })); }}
                 error={errors.data}
               />
             </div>

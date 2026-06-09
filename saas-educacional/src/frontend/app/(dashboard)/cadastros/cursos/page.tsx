@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -15,14 +16,6 @@ interface Curso {
   status: string;
   [key: string]: unknown;
 }
-
-const mockCursos: Curso[] = [
-  { id: '1', nome: 'Administracao', codigo: 'ADM001', duracao: '4 anos', modalidade: 'Presencial', status: 'Ativo' },
-  { id: '2', nome: 'Enfermagem', codigo: 'ENF001', duracao: '5 anos', modalidade: 'Presencial', status: 'Ativo' },
-  { id: '3', nome: 'Sistemas de Informacao', codigo: 'SI001', duracao: '4 anos', modalidade: 'Hibrido', status: 'Ativo' },
-  { id: '4', nome: 'Direito', codigo: 'DIR001', duracao: '5 anos', modalidade: 'Presencial', status: 'Ativo' },
-  { id: '5', nome: 'Pedagogia', codigo: 'PED001', duracao: '4 anos', modalidade: 'EAD', status: 'Inativo' },
-];
 
 const columns: Column<Curso>[] = [
   { key: 'codigo', header: 'Codigo', sortable: true },
@@ -39,6 +32,13 @@ const columns: Column<Curso>[] = [
 ];
 
 export default function CursosPage() {
+  const { data, isLoading, error, execute } = useApi<Curso[]>('/cadastros/cursos');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -57,7 +57,7 @@ export default function CursosPage() {
       />
 
       <DataTable
-        data={mockCursos}
+        data={data || []}
         columns={columns}
         searchKey="nome"
         searchPlaceholder="Buscar cursos..."

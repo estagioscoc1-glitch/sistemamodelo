@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -25,15 +26,6 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Pendente: 'warning',
 };
 
-const mockRenegociacoes: Renegociacao[] = [
-  { id: '1', aluno: 'Joao Pedro Oliveira', valorOriginal: 'R$ 5.880,00', valorNegociado: 'R$ 5.000,00', parcelas: '6x R$ 833,33', dataAcordo: '15/03/2024', status: 'Ativa' },
-  { id: '2', aluno: 'Carlos Eduardo Lima', valorOriginal: 'R$ 4.500,00', valorNegociado: 'R$ 3.800,00', parcelas: '4x R$ 950,00', dataAcordo: '20/02/2024', status: 'Quitada' },
-  { id: '3', aluno: 'Pedro Santos', valorOriginal: 'R$ 3.600,00', valorNegociado: 'R$ 3.200,00', parcelas: '3x R$ 1.066,67', dataAcordo: '10/04/2024', status: 'Ativa' },
-  { id: '4', aluno: 'Fernanda Lima', valorOriginal: 'R$ 7.200,00', valorNegociado: 'R$ 6.000,00', parcelas: '8x R$ 750,00', dataAcordo: '05/01/2024', status: 'Inadimplente' },
-  { id: '5', aluno: 'Lucas Mendes', valorOriginal: 'R$ 2.400,00', valorNegociado: 'R$ 2.100,00', parcelas: '3x R$ 700,00', dataAcordo: '22/03/2024', status: 'Pendente' },
-  { id: '6', aluno: 'Mariana Costa', valorOriginal: 'R$ 4.800,00', valorNegociado: 'R$ 4.200,00', parcelas: '5x R$ 840,00', dataAcordo: '01/04/2024', status: 'Ativa' },
-];
-
 const columns: Column<Renegociacao>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
   { key: 'valorOriginal', header: 'Valor Original' },
@@ -51,6 +43,12 @@ const columns: Column<Renegociacao>[] = [
 
 export default function RenegociacoesPage() {
   const { addToast } = useToast();
+  const { data, isLoading, error, execute } = useApi<Renegociacao[]>('/financeiro/renegociacoes');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
 
   return (
     <div>
@@ -70,7 +68,7 @@ export default function RenegociacoesPage() {
       />
 
       <DataTable
-        data={mockRenegociacoes}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

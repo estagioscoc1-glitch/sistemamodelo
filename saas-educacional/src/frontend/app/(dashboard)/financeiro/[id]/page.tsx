@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -18,21 +20,20 @@ interface Parcela {
   [key: string]: unknown;
 }
 
+interface ContaDetalhe {
+  aluno: string;
+  descricao: string;
+  valorTotal: string;
+  status: string;
+  parcelas: Parcela[];
+}
+
 const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destructive' | 'default'> = {
   Paga: 'success',
   Pendente: 'default',
   Atrasada: 'destructive',
   Cancelada: 'secondary',
 };
-
-const mockParcelas: Parcela[] = [
-  { id: '1', parcela: '1/6', valor: 'R$ 200,00', vencimento: '10/01/2024', pagamento: '09/01/2024', status: 'Paga' },
-  { id: '2', parcela: '2/6', valor: 'R$ 200,00', vencimento: '10/02/2024', pagamento: '10/02/2024', status: 'Paga' },
-  { id: '3', parcela: '3/6', valor: 'R$ 200,00', vencimento: '10/03/2024', pagamento: '-', status: 'Pendente' },
-  { id: '4', parcela: '4/6', valor: 'R$ 200,00', vencimento: '10/04/2024', pagamento: '-', status: 'Pendente' },
-  { id: '5', parcela: '5/6', valor: 'R$ 200,00', vencimento: '10/05/2024', pagamento: '-', status: 'Pendente' },
-  { id: '6', parcela: '6/6', valor: 'R$ 200,00', vencimento: '10/06/2024', pagamento: '-', status: 'Pendente' },
-];
 
 const parcelaColumns: Column<Parcela>[] = [
   { key: 'parcela', header: 'Parcela' },
@@ -49,6 +50,15 @@ const parcelaColumns: Column<Parcela>[] = [
 ];
 
 export default function ContaDetailPage() {
+  const params = useParams();
+  const id = params?.id as string;
+  const { data, isLoading, error, execute } = useApi<ContaDetalhe>(`/financeiro/${id}`);
+
+  useEffect(() => { if (id) execute(); }, [id, execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   const tabItems = [
     {
       value: 'dados',
@@ -58,19 +68,19 @@ export default function ContaDetailPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <p className="text-sm text-muted-foreground">Aluno</p>
-              <p className="font-medium">Ana Silva Santos</p>
+              <p className="font-medium">{data?.aluno || '-'}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Descricao</p>
-              <p className="font-medium">Mensalidade 2024/1</p>
+              <p className="font-medium">{data?.descricao || '-'}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Valor Total</p>
-              <p className="font-medium">R$ 1.200,00</p>
+              <p className="font-medium">{data?.valorTotal || '-'}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Status</p>
-              <Badge variant="default">Aberta</Badge>
+              <Badge variant="default">{data?.status || '-'}</Badge>
             </div>
           </div>
         </div>
@@ -82,7 +92,7 @@ export default function ContaDetailPage() {
       content: (
         <div className="mt-4">
           <DataTable
-            data={mockParcelas}
+            data={data?.parcelas || []}
             columns={parcelaColumns}
             actions={(item) => (
               <Button
@@ -110,13 +120,13 @@ export default function ContaDetailPage() {
           { label: 'Detalhes' },
         ]}
         actions={
-          <Badge variant="default">Aberta</Badge>
+          <Badge variant="default">{data?.status || '-'}</Badge>
         }
       />
 
       <Card>
         <CardHeader>
-          <CardTitle>Ana Silva Santos - Mensalidade 2024/1</CardTitle>
+          <CardTitle>{data?.aluno || ''} - {data?.descricao || ''}</CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs items={tabItems} defaultValue="dados" />

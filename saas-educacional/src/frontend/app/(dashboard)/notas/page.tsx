@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -25,21 +26,11 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Fechado: 'default',
 };
 
-const mockNotas: Nota[] = [
-  { id: '1', aluno: 'Ana Silva Santos', disciplina: 'Matematica', turma: 'ADM-2024-1A', nota: 8.5, periodo: '1o Bimestre', status: 'Aprovado' },
-  { id: '2', aluno: 'Joao Pedro Oliveira', disciplina: 'Portugues', turma: 'SI-2024-1A', nota: 6.0, periodo: '1o Bimestre', status: 'Recuperacao' },
-  { id: '3', aluno: 'Maria Fernandes Costa', disciplina: 'Historia', turma: 'ENF-2024-1A', nota: 9.2, periodo: '1o Bimestre', status: 'Aprovado' },
-  { id: '4', aluno: 'Carlos Eduardo Lima', disciplina: 'Fisica', turma: 'DIR-2023-2A', nota: 4.5, periodo: '2o Bimestre', status: 'Reprovado' },
-  { id: '5', aluno: 'Juliana Almeida', disciplina: 'Quimica', turma: 'PED-2023-1A', nota: 7.0, periodo: '1o Bimestre', status: 'Aprovado' },
-  { id: '6', aluno: 'Pedro Santos', disciplina: 'Biologia', turma: 'ADM-2024-1B', nota: 5.5, periodo: '2o Bimestre', status: 'Recuperacao' },
-  { id: '7', aluno: 'Fernanda Lima', disciplina: 'Matematica', turma: 'SI-2024-1A', nota: 7.8, periodo: '1o Bimestre', status: 'Pendente' },
-];
-
 const columns: Column<Nota>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
   { key: 'disciplina', header: 'Disciplina', sortable: true },
   { key: 'turma', header: 'Turma' },
-  { key: 'nota', header: 'Nota', render: (item) => <span>{item.nota.toFixed(1)}</span> },
+  { key: 'nota', header: 'Nota', render: (item) => <span>{item.nota?.toFixed(1)}</span> },
   { key: 'periodo', header: 'Periodo' },
   {
     key: 'status',
@@ -51,6 +42,13 @@ const columns: Column<Nota>[] = [
 ];
 
 export default function NotasPage() {
+  const { data, isLoading, error, execute } = useApi<Nota[]>('/notas');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -68,7 +66,7 @@ export default function NotasPage() {
       />
 
       <DataTable
-        data={mockNotas}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

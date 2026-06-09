@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -27,15 +28,6 @@ const avaliacaoVariant: Record<string, 'success' | 'secondary' | 'warning' | 'de
   Pendente: 'secondary',
 };
 
-const mockAcompanhamentos: Acompanhamento[] = [
-  { id: '1', aluno: 'Ana Silva Santos', empresa: 'TechCorp Ltda', ultimaVisita: '15/04/2024', proximaVisita: '15/05/2024', avaliacaoEmpresa: 'Excelente', avaliacaoAluno: 'Bom', observacoes: 'Desempenho satisfatorio' },
-  { id: '2', aluno: 'Joao Pedro Oliveira', empresa: 'Construtora ABC', ultimaVisita: '10/03/2024', proximaVisita: '10/04/2024', avaliacaoEmpresa: 'Bom', avaliacaoAluno: 'Regular', observacoes: 'Precisa melhorar pontualidade' },
-  { id: '3', aluno: 'Maria Fernandes Costa', empresa: 'Hospital Vida', ultimaVisita: '20/04/2024', proximaVisita: '-', avaliacaoEmpresa: 'Excelente', avaliacaoAluno: 'Excelente', observacoes: 'Estagio concluido com destaque' },
-  { id: '4', aluno: 'Carlos Eduardo Lima', empresa: 'Escritorio Juridico Silva', ultimaVisita: '01/02/2024', proximaVisita: '01/05/2024', avaliacaoEmpresa: 'Pendente', avaliacaoAluno: 'Pendente', observacoes: 'Visita atrasada' },
-  { id: '5', aluno: 'Juliana Almeida', empresa: 'Escola Municipal Norte', ultimaVisita: '18/04/2024', proximaVisita: '18/05/2024', avaliacaoEmpresa: 'Bom', avaliacaoAluno: 'Excelente', observacoes: 'Otimo engajamento' },
-  { id: '6', aluno: 'Pedro Santos', empresa: 'TechCorp Ltda', ultimaVisita: '22/04/2024', proximaVisita: '22/05/2024', avaliacaoEmpresa: 'Bom', avaliacaoAluno: 'Bom', observacoes: 'Progresso adequado' },
-];
-
 const columns: Column<Acompanhamento>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
   { key: 'empresa', header: 'Empresa' },
@@ -59,6 +51,12 @@ const columns: Column<Acompanhamento>[] = [
 
 export default function AcompanhamentoEstagioPage() {
   const { addToast } = useToast();
+  const { data, isLoading, error, execute } = useApi<Acompanhamento[]>('/estagios/acompanhamento');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
 
   return (
     <div>
@@ -78,7 +76,7 @@ export default function AcompanhamentoEstagioPage() {
       />
 
       <DataTable
-        data={mockAcompanhamentos}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

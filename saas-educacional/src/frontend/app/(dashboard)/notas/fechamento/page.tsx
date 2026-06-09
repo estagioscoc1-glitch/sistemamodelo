@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
@@ -26,15 +27,6 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Parcial: 'secondary',
 };
 
-const mockFechamentos: Fechamento[] = [
-  { id: '1', disciplina: 'Matematica', turma: 'ADM-2024-1A', periodo: '1o Bimestre', totalAlunos: 35, notasLancadas: 35, status: 'Fechado' },
-  { id: '2', disciplina: 'Portugues', turma: 'SI-2024-1A', periodo: '1o Bimestre', totalAlunos: 30, notasLancadas: 28, status: 'Parcial' },
-  { id: '3', disciplina: 'Historia', turma: 'ENF-2024-1A', periodo: '1o Bimestre', totalAlunos: 40, notasLancadas: 40, status: 'Fechado' },
-  { id: '4', disciplina: 'Fisica', turma: 'DIR-2023-2A', periodo: '2o Bimestre', totalAlunos: 25, notasLancadas: 0, status: 'Pendente' },
-  { id: '5', disciplina: 'Quimica', turma: 'PED-2023-1A', periodo: '1o Bimestre', totalAlunos: 32, notasLancadas: 32, status: 'Fechado' },
-  { id: '6', disciplina: 'Biologia', turma: 'ADM-2024-1B', periodo: '2o Bimestre', totalAlunos: 38, notasLancadas: 20, status: 'Parcial' },
-];
-
 const columns: Column<Fechamento>[] = [
   { key: 'disciplina', header: 'Disciplina', sortable: true },
   { key: 'turma', header: 'Turma', sortable: true },
@@ -52,11 +44,17 @@ const columns: Column<Fechamento>[] = [
 
 export default function FechamentoNotasPage() {
   const { addToast } = useToast();
+  const { data, isLoading, error, execute } = useApi<Fechamento[]>('/notas/fechamento');
   const [periodo, setPeriodo] = useState('');
+
+  useEffect(() => { execute(); }, [execute]);
 
   const handleFechar = () => {
     addToast({ title: 'Periodo fechado com sucesso!', variant: 'success' });
   };
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
 
   return (
     <div>
@@ -97,7 +95,7 @@ export default function FechamentoNotasPage() {
       </Card>
 
       <DataTable
-        data={mockFechamentos}
+        data={data || []}
         columns={columns}
         searchKey="disciplina"
         searchPlaceholder="Buscar por disciplina..."

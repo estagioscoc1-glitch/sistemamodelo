@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -16,15 +17,6 @@ interface Professor {
   status: string;
   [key: string]: unknown;
 }
-
-const mockProfessores: Professor[] = [
-  { id: '1', nome: 'Prof. Maria Santos', cpf: '111.222.333-44', email: 'maria.santos@escola.edu.br', departamento: 'Administracao', titulacao: 'Doutorado', status: 'Ativo' },
-  { id: '2', nome: 'Prof. Carlos Oliveira', cpf: '222.333.444-55', email: 'carlos.oliveira@escola.edu.br', departamento: 'Ciencias Exatas', titulacao: 'Mestrado', status: 'Ativo' },
-  { id: '3', nome: 'Prof. Ana Paula Lima', cpf: '333.444.555-66', email: 'ana.lima@escola.edu.br', departamento: 'Saude', titulacao: 'Doutorado', status: 'Ativo' },
-  { id: '4', nome: 'Prof. Roberto Alves', cpf: '444.555.666-77', email: 'roberto.alves@escola.edu.br', departamento: 'Direito', titulacao: 'Mestrado', status: 'Ativo' },
-  { id: '5', nome: 'Prof. Lucia Fernandes', cpf: '555.666.777-88', email: 'lucia.fernandes@escola.edu.br', departamento: 'Educacao', titulacao: 'Doutorado', status: 'Afastado' },
-  { id: '6', nome: 'Prof. Paulo Mendes', cpf: '666.777.888-99', email: 'paulo.mendes@escola.edu.br', departamento: 'Tecnologia', titulacao: 'Especializacao', status: 'Ativo' },
-];
 
 const columns: Column<Professor>[] = [
   { key: 'nome', header: 'Nome', sortable: true },
@@ -42,6 +34,13 @@ const columns: Column<Professor>[] = [
 ];
 
 export default function ProfessoresPage() {
+  const { data, isLoading, error, execute } = useApi<Professor[]>('/cadastros/professores');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -60,7 +59,7 @@ export default function ProfessoresPage() {
       />
 
       <DataTable
-        data={mockProfessores}
+        data={data || []}
         columns={columns}
         searchKey="nome"
         searchPlaceholder="Buscar professores..."

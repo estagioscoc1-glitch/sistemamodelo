@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -24,17 +25,6 @@ const statusVariant: Record<string, 'success' | 'secondary' | 'warning' | 'destr
   Cancelada: 'secondary',
 };
 
-const mockParcelas: Parcela[] = [
-  { id: '1', aluno: 'Ana Silva Santos', descricao: 'Mensalidade 2024', parcela: '1/12', valor: 'R$ 1.200,00', vencimento: '10/01/2024', status: 'Paga' },
-  { id: '2', aluno: 'Ana Silva Santos', descricao: 'Mensalidade 2024', parcela: '2/12', valor: 'R$ 1.200,00', vencimento: '10/02/2024', status: 'Paga' },
-  { id: '3', aluno: 'Ana Silva Santos', descricao: 'Mensalidade 2024', parcela: '3/12', valor: 'R$ 1.200,00', vencimento: '10/03/2024', status: 'Paga' },
-  { id: '4', aluno: 'Joao Pedro Oliveira', descricao: 'Mensalidade 2024', parcela: '1/12', valor: 'R$ 980,00', vencimento: '10/01/2024', status: 'Paga' },
-  { id: '5', aluno: 'Joao Pedro Oliveira', descricao: 'Mensalidade 2024', parcela: '2/12', valor: 'R$ 980,00', vencimento: '10/02/2024', status: 'Vencida' },
-  { id: '6', aluno: 'Carlos Eduardo Lima', descricao: 'Mensalidade 2024', parcela: '1/12', valor: 'R$ 1.500,00', vencimento: '10/01/2024', status: 'Paga' },
-  { id: '7', aluno: 'Carlos Eduardo Lima', descricao: 'Mensalidade 2024', parcela: '2/12', valor: 'R$ 1.500,00', vencimento: '10/02/2024', status: 'Pendente' },
-  { id: '8', aluno: 'Juliana Almeida', descricao: 'Mensalidade 2024', parcela: '1/12', valor: 'R$ 850,00', vencimento: '10/01/2024', status: 'Cancelada' },
-];
-
 const columns: Column<Parcela>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
   { key: 'descricao', header: 'Descricao' },
@@ -51,6 +41,13 @@ const columns: Column<Parcela>[] = [
 ];
 
 export default function ParcelasPage() {
+  const { data, isLoading, error, execute } = useApi<Parcela[]>('/financeiro/parcelas');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -69,7 +66,7 @@ export default function ParcelasPage() {
       />
 
       <DataTable
-        data={mockParcelas}
+        data={data || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."

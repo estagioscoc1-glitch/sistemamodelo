@@ -1,11 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useApi } from '@/hooks/useApi';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { DataTable, type Column } from '@/components/shared/DataTable';
+
+interface InadimplenciaData {
+  totalInadimplentes: number;
+  valorAberto: string;
+  taxaInadimplencia: string;
+  maiorAtraso: number;
+  inadimplentes: Inadimplente[];
+}
 
 interface Inadimplente {
   id: string;
@@ -17,15 +26,6 @@ interface Inadimplente {
   ultimoContato: string;
   [key: string]: unknown;
 }
-
-const mockInadimplentes: Inadimplente[] = [
-  { id: '1', aluno: 'Joao Pedro Oliveira', curso: 'Sistemas de Informacao', parcelasVencidas: 3, valorTotal: 'R$ 2.940,00', diasAtraso: 90, ultimoContato: '10/03/2024' },
-  { id: '2', aluno: 'Fernanda Lima', curso: 'Administracao', parcelasVencidas: 2, valorTotal: 'R$ 2.400,00', diasAtraso: 60, ultimoContato: '15/03/2024' },
-  { id: '3', aluno: 'Pedro Santos', curso: 'Direito', parcelasVencidas: 1, valorTotal: 'R$ 1.500,00', diasAtraso: 25, ultimoContato: '20/04/2024' },
-  { id: '4', aluno: 'Lucas Mendes', curso: 'Enfermagem', parcelasVencidas: 4, valorTotal: 'R$ 4.400,00', diasAtraso: 120, ultimoContato: '01/02/2024' },
-  { id: '5', aluno: 'Mariana Costa', curso: 'Pedagogia', parcelasVencidas: 2, valorTotal: 'R$ 1.700,00', diasAtraso: 55, ultimoContato: '18/03/2024' },
-  { id: '6', aluno: 'Ricardo Alves', curso: 'Administracao', parcelasVencidas: 1, valorTotal: 'R$ 1.200,00', diasAtraso: 15, ultimoContato: '25/04/2024' },
-];
 
 const columns: Column<Inadimplente>[] = [
   { key: 'aluno', header: 'Aluno', sortable: true },
@@ -46,6 +46,13 @@ const columns: Column<Inadimplente>[] = [
 ];
 
 export default function InadimplenciaPage() {
+  const { data, isLoading, error, execute } = useApi<InadimplenciaData>('/financeiro/inadimplencia');
+
+  useEffect(() => { execute(); }, [execute]);
+
+  if (isLoading) return <div className="p-6">Carregando...</div>;
+  if (error) return <div className="p-6 text-red-500">Erro: {error}</div>;
+
   return (
     <div>
       <PageHeader
@@ -64,7 +71,7 @@ export default function InadimplenciaPage() {
             <CardTitle className="text-sm">Total Inadimplentes</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-destructive">6</p>
+            <p className="text-2xl font-bold text-destructive">{data?.totalInadimplentes || 0}</p>
           </CardContent>
         </Card>
         <Card>
@@ -72,7 +79,7 @@ export default function InadimplenciaPage() {
             <CardTitle className="text-sm">Valor em Aberto</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">R$ 14.140,00</p>
+            <p className="text-2xl font-bold">{data?.valorAberto || 'R$ 0,00'}</p>
           </CardContent>
         </Card>
         <Card>
@@ -80,7 +87,7 @@ export default function InadimplenciaPage() {
             <CardTitle className="text-sm">Taxa Inadimplencia</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">8,2%</p>
+            <p className="text-2xl font-bold">{data?.taxaInadimplencia || '0%'}</p>
           </CardContent>
         </Card>
         <Card>
@@ -88,17 +95,17 @@ export default function InadimplenciaPage() {
             <CardTitle className="text-sm">Maior Atraso</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-destructive">120 dias</p>
+            <p className="text-2xl font-bold text-destructive">{data?.maiorAtraso || 0} dias</p>
           </CardContent>
         </Card>
       </div>
 
       <DataTable
-        data={mockInadimplentes}
+        data={data?.inadimplentes || []}
         columns={columns}
         searchKey="aluno"
         searchPlaceholder="Buscar por aluno..."
-        actions={(item) => (
+        actions={() => (
           <div className="flex gap-2">
             <a href="/financeiro/renegociacoes">
               <Button variant="ghost" size="sm">Renegociar</Button>

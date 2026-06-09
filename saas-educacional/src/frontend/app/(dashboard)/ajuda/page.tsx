@@ -13,7 +13,7 @@ interface FAQ {
   categoria: string;
 }
 
-const mockFAQ: FAQ[] = [
+const faqItems: FAQ[] = [
   { id: '1', pergunta: 'Como realizar uma nova matricula?', resposta: 'Acesse o menu Matriculas > Nova Matricula. Preencha os dados do aluno, selecione o curso e turma, e clique em Salvar.', categoria: 'Matriculas' },
   { id: '2', pergunta: 'Como lancar notas?', resposta: 'Acesse o menu Notas > Lancamento. Selecione a turma, disciplina e periodo. Preencha as notas de cada aluno e clique em Salvar.', categoria: 'Notas' },
   { id: '3', pergunta: 'Como gerar boletos?', resposta: 'Acesse Financeiro > Parcelas. Selecione as parcelas pendentes e clique em "Gerar Boleto". Os boletos serao enviados por e-mail.', categoria: 'Financeiro' },
@@ -29,11 +29,11 @@ export default function AjudaPage() {
   const [expandido, setExpandido] = useState<string | null>(null);
 
   const filteredFAQ = busca
-    ? mockFAQ.filter((faq) =>
+    ? faqItems.filter((faq) =>
         faq.pergunta.toLowerCase().includes(busca.toLowerCase()) ||
         faq.resposta.toLowerCase().includes(busca.toLowerCase())
       )
-    : mockFAQ;
+    : faqItems;
 
   return (
     <div>
