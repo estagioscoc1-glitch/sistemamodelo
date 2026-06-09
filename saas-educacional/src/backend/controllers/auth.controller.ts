@@ -8,8 +8,8 @@ export class AuthController {
     try {
       const { email, password, tenantId } = req.body;
 
-      if (!email || !password || !tenantId) {
-        throw new AppError('Email, password and tenantId are required', 400);
+      if (!email || !password) {
+        throw new AppError('Email and password are required', 400);
       }
 
       const tokens = await authService.login({ email, password, tenantId });

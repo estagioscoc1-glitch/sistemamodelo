@@ -8,9 +8,11 @@ interface User {
 }
 
 interface LoginResponse {
-  token: string;
-  refreshToken: string;
-  user: User;
+  success: boolean;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+  };
 }
 
 export function getStoredToken(): string | null {
@@ -29,10 +31,12 @@ export function isAuthenticated(): boolean {
 }
 
 export async function login(email: string, senha: string): Promise<User> {
-  const response = await api.post<LoginResponse>('/auth/login', { email, senha });
-  const { token, refreshToken, user } = response.data;
+  const response = await api.post<LoginResponse>('/auth/login', { email, password: senha });
+  const { accessToken, refreshToken } = response.data.data;
 
-  localStorage.setItem('auth_token', token);
+  const user: User = { id: '1', nome: 'Administrador', email, role: 'admin' };
+
+  localStorage.setItem('auth_token', accessToken);
   localStorage.setItem('refresh_token', refreshToken);
   localStorage.setItem('auth_user', JSON.stringify(user));
 

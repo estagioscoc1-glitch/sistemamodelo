@@ -8,7 +8,7 @@ import { prisma } from '../services/prisma.service';
 export interface LoginInput {
   email: string;
   password: string;
-  tenantId: string;
+  tenantId?: string;
 }
 
 export interface TokenPair {
@@ -18,13 +18,17 @@ export interface TokenPair {
 
 export class AuthService {
   async login(input: LoginInput): Promise<TokenPair> {
+    const whereClause: any = {
+      email: input.email,
+      isActive: true,
+      deletedAt: null,
+    };
+    if (input.tenantId) {
+      whereClause.tenantId = input.tenantId;
+    }
+
     const user = await prisma.user.findFirst({
-      where: {
-        email: input.email,
-        tenantId: input.tenantId,
-        isActive: true,
-        deletedAt: null,
-      },
+      where: whereClause,
     });
 
     if (!user) {
