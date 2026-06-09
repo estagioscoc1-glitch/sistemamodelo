@@ -19,7 +19,7 @@ interface StudentAttendance {
 
 export default function ChamadasPage() {
   const { addToast } = useToast();
-  const { data, isLoading, error, execute } = useApi<StudentAttendance[]>('/diario');
+  const { data, isLoading, error, execute } = useApi<StudentAttendance[]>('/diario/attendance');
   const [turma, setTurma] = useState('');
   const [disciplina, setDisciplina] = useState('');
   const [dataChamada, setDataChamada] = useState('');

@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { notasController } from '../controllers/notas.controller';
 import { authMiddleware } from '../middleware/auth';
+import { validateBody } from '../middleware/security';
+import { gradeSchema } from '../validators';
 
 const router = Router();
 
@@ -9,7 +11,7 @@ router.use(authMiddleware);
 
 // List and create
 router.get('/', (req, res, next) => notasController.list(req, res, next));
-router.post('/', (req, res, next) => notasController.create(req, res, next));
+router.post('/', validateBody(gradeSchema), (req, res, next) => notasController.create(req, res, next));
 
 // Batch operations
 router.post('/bulk', (req, res, next) => notasController.bulkCreate(req, res, next));
@@ -23,6 +25,6 @@ router.post('/fechamento', (req, res, next) => notasController.close(req, res, n
 
 // Single grade operations
 router.get('/:id', (req, res, next) => notasController.getById(req, res, next));
-router.put('/:id', (req, res, next) => notasController.update(req, res, next));
+router.put('/:id', validateBody(gradeSchema), (req, res, next) => notasController.update(req, res, next));
 
 export default router;

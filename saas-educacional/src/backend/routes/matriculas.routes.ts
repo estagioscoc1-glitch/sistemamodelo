@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { matriculasController } from '../controllers/matriculas.controller';
 import { authMiddleware } from '../middleware/auth';
+import { validateBody } from '../middleware/security';
+import { enrollmentSchema } from '../validators';
 
 const router = Router();
 
@@ -9,9 +11,9 @@ router.use(authMiddleware);
 
 // Basic CRUD
 router.get('/', (req, res, next) => matriculasController.list(req, res, next));
-router.post('/', (req, res, next) => matriculasController.create(req, res, next));
+router.post('/', validateBody(enrollmentSchema), (req, res, next) => matriculasController.create(req, res, next));
 router.get('/:id', (req, res, next) => matriculasController.getById(req, res, next));
-router.put('/:id', (req, res, next) => matriculasController.update(req, res, next));
+router.put('/:id', validateBody(enrollmentSchema), (req, res, next) => matriculasController.update(req, res, next));
 
 // Lifecycle operations
 router.post('/:id/renovar', (req, res, next) => matriculasController.renew(req, res, next));

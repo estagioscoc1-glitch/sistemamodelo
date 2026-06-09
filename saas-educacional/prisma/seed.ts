@@ -101,6 +101,8 @@ async function main() {
   console.log('Email: admin@sistema.com');
   console.log('Senha: Admin@123');
   console.log('Tenant ID: ' + tenant.id);
+  console.log('-------------------------------------------');
+  console.log('IMPORTANTE: Altere a senha imediatamente apos o primeiro login');
   console.log('===========================================');
   console.log('');
   console.log('Seed concluido com sucesso!');

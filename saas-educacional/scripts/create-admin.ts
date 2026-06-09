@@ -108,6 +108,8 @@ async function createAdmin() {
   console.log(`Email: ${email}`);
   console.log(`Senha: ${password}`);
   console.log(`Tenant: ${tenant.name} (${tenant.id})`);
+  console.log('-------------------------------------------');
+  console.log('IMPORTANTE: Altere a senha imediatamente apos o primeiro login');
   console.log('===========================================');
 }
 

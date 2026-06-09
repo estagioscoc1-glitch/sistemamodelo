@@ -21,7 +21,7 @@ interface AlunoFrequencia {
 
 export default function FrequenciaPage() {
   const { addToast } = useToast();
-  const { data, isLoading, error, execute } = useApi<AlunoFrequencia[]>('/diario/frequencia');
+  const { data, isLoading, error, execute } = useApi<AlunoFrequencia[]>('/diario/attendance');
   const [turma, setTurma] = useState('');
   const [disciplina, setDisciplina] = useState('');
 

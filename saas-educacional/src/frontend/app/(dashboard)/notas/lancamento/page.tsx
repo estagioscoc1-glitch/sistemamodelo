@@ -18,7 +18,7 @@ interface StudentGrade {
 
 export default function LancamentoNotasPage() {
   const { addToast } = useToast();
-  const { data, isLoading, error, execute } = useApi<StudentGrade[]>('/notas/lancamento');
+  const { data, isLoading, error, execute } = useApi<StudentGrade[]>('/notas');
   const [turma, setTurma] = useState('');
   const [disciplina, setDisciplina] = useState('');
   const [periodo, setPeriodo] = useState('');
