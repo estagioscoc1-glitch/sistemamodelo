@@ -5,6 +5,9 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# Instalar OpenSSL (necessario para Prisma)
+RUN apk add --no-cache openssl
+
 # Copiar arquivos de dependencias
 COPY package.json package-lock.json ./
 COPY prisma ./prisma/
@@ -30,6 +33,9 @@ FROM node:22-alpine AS production
 
 WORKDIR /app
 
+# Instalar OpenSSL (necessario para Prisma)
+RUN apk add --no-cache openssl
+
 # Instalar apenas dependencias de producao
 COPY package.json package-lock.json ./
 RUN npm ci --only=production
@@ -37,6 +43,9 @@ RUN npm ci --only=production
 # Copiar Prisma schema e gerar client
 COPY prisma ./prisma/
 RUN npx prisma generate
+
+# Copiar scripts auxiliares
+COPY scripts ./scripts/
 
 # Copiar build
 COPY --from=builder /app/dist ./dist
