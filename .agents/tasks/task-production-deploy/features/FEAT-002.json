@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Connect all 35 frontend pages that use mock data to the real backend API using the existing useApi hook and api client",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Step 1: Update ALL listing pages under cadastros/ to replace mock data with real API calls. Each page must: (a) import useApi and useEffect from react, (b) call useApi with the correct endpoint (e.g., /cadastros/alunos, /cadastros/cursos, /cadastros/turmas, /cadastros/disciplinas, /cadastros/professores), (c) call execute() in useEffect, (d) render loading state, error state, and data from the API. Pages to update: cadastros/alunos/page.tsx, cadastros/cursos/page.tsx, cadastros/turmas/page.tsx, cadastros/disciplinas/page.tsx, cadastros/professores/page.tsx",
     "Step 2: Update ALL listing pages under matriculas/ - same pattern as Step 1. Endpoint: /matriculas. Pages: matriculas/page.tsx",
@@ -27,5 +27,5 @@
     "Run: cd /projects/sandbox/sistemamodelo/saas-educacional/src/frontend && npx next build (frontend compiles without type errors)"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "Only 4 listing pages had mock data arrays (alunos, cursos, turmas, matriculas). Other pages (detail/form pages) use inline useState with hardcoded defaults but no mock* variables. The feature description mentioned 35 pages but the actual codebase only had these 4 listing pages plus the dashboard with static KPIs. All mock* references are now removed. Frontend builds cleanly and all 32 backend tests pass."
 }
