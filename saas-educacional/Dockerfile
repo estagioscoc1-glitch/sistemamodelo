@@ -18,7 +18,7 @@ RUN npx prisma generate
 # Copiar codigo fonte
 COPY tsconfig.json ./
 COPY src/backend ./src/backend/
-COPY src/shared ./src/shared/ 2>/dev/null || true
+COPY src/shared ./src/shared/
 
 # Compilar TypeScript
 RUN npm run build:backend
